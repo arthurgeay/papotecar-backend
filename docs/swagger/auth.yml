@@ -1,0 +1,29 @@
+/register:
+  post:
+    tags:
+      - Auth
+    description: Register a new user.
+    summary: Register a new user.
+    operationId: register
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Register'
+    responses:
+      200:
+        description: Successful registration.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+      400:
+        description: Error during register.
+      422:
+        description: Validation error.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationError'
+      500:
+        description: Internal server error.
