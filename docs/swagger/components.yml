@@ -55,3 +55,15 @@ components:
           type: string
           description: The rule that failed validation
           example: required
+
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The user's email address.
+          example: john@doe.com
+        password:
+          type: string
+          description: The user's password.
+          example: supersecretpassword

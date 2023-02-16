@@ -54,3 +54,49 @@ test.group('Register', (group) => {
     assert.exists(response.body().token)
   })
 })
+
+test.group('Login', (group) => {
+  group.each.setup(async () => {
+    await Database.beginGlobalTransaction()
+    return () => Database.rollbackGlobalTransaction()
+  })
+
+  test('it should validation failed', async ({ client, assert }, row) => {
+    const response = await client.post('/login').json(row.data)
+
+    assert.equal(response.status(), 422)
+    assert.equal(response.body().errors[0].message, row.error)
+  }).with([
+    {
+      data: { password: 'test' },
+      error: "L'email est requis",
+    },
+    {
+      data: { email: 'fake', password: 'test' },
+      error: "L'email n'est pas valide",
+    },
+    {
+      data: { email: 'fake@gmail.com' },
+      error: 'Le mot de passe est requis',
+    },
+  ])
+
+  test('it should return that user not found', async ({ client, assert }) => {
+    const response = await client.post('/login').json({
+      email: 'notfounduser@gmail.com',
+      password: 'lostuser@',
+    })
+
+    assert.equal(response.status(), 400)
+  })
+
+  test('it should login user', async ({ client, assert }) => {
+    const response = await client.post('/login').json({
+      email: 'test@papotecar.com',
+      password: 'password123',
+    })
+
+    assert.equal(response.status(), 200)
+    assert.exists(response.body().token)
+  })
+})

@@ -27,3 +27,33 @@
               $ref: '#/components/schemas/ValidationError'
       500:
         description: Internal server error.
+
+/login:
+  post:
+    tags:
+      - Auth
+    description: Login a user.
+    summary: Login a user.
+    operationId: login
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Login'
+    responses:
+      200:
+        description: Successful login.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+      400:
+        description: Error during login.
+      422:
+        description: Validation error.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationError'
+      500:
+        description: Internal server error.
