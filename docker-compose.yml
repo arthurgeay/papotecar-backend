@@ -11,6 +11,8 @@ services:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       TZ: 'Europe/Paris'
+    volumes:
+      - ./docker/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
 
   redis:
     image: redis:alpine
