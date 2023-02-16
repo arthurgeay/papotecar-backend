@@ -7,7 +7,10 @@
     "build": "node ace build --production",
     "start": "node server.js",
     "lint": "eslint . --ext=.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format-and-lint": "npm run format && npm run lint",
+    "test": "node ace test",
+    "coverage": "nyc --reporter=text-summary npm run test"
   },
   "eslintConfig": {
     "extends": [
@@ -47,6 +50,7 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-adonis": "^2.1.1",
     "eslint-plugin-prettier": "^4.2.1",
+    "nyc": "^15.1.0",
     "pino-pretty": "^9.2.0",
     "prettier": "^2.8.4",
     "typescript": "~4.6",
@@ -54,8 +58,14 @@
     "youch-terminal": "^2.2.0"
   },
   "dependencies": {
+    "@adonisjs/auth": "^8.2.3",
     "@adonisjs/core": "^5.9.0",
+    "@adonisjs/lucid": "^18.3.0",
+    "@adonisjs/redis": "^7.3.2",
     "@adonisjs/repl": "^3.1.11",
+    "adonis5-swagger": "^1.4.1",
+    "luxon": "^3.2.1",
+    "pg": "^8.9.0",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.21"
