@@ -5,3 +5,7 @@ coverage
 .DS_STORE
 .env
 tmp
+
+# Ignore volumes
+db-postgres
+db-redis
