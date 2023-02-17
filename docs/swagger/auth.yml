@@ -62,6 +62,8 @@
   post:
     tags:
       - Auth
+    security:
+      - BearerAuth: []
     description: Logout a user.
     summary: Logout a user.
     operationId: logout
