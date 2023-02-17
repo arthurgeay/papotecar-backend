@@ -67,3 +67,129 @@ components:
           type: string
           description: The user's password.
           example: supersecretpassword
+
+    TripPaginated:
+      type: object
+      properties:
+        meta:
+          type: object
+          $ref: '#/components/schemas/MetaPaginated'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trip'
+
+    MetaPaginated:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of items.
+          example: 10
+        per_page:
+          type: integer
+          description: The number of items per page.
+          example: 10
+        current_page:
+          type: integer
+          description: The current page.
+          example: 1
+        last_page:
+          type: integer
+          description: The last page.
+          example: 2
+        first_page:
+          type: integer
+          description: The first page.
+          example: 1
+        first_page_url:
+          type: string
+          description: The first page URL.
+          example: /?page=1
+        last_page_url:
+          type: string
+          description: The last page URL.
+          example: /?page=2
+        next_page_url:
+          type: string
+          description: The next page URL.
+          example: /?page=2
+        previous_page_url:
+          type: string
+          description: The previous page URL.
+          example: null
+
+    Trip:
+      type: object
+      properties:
+        id:
+          type: uuid
+          description: The trip's ID.
+          example: e6b7c8d9-e0f1-2a3b-4c5d-6e7f8g9h0i1j
+        departure_location:
+          type: object
+          $ref: '#/components/schemas/Location'
+        arrival_location:
+          $ref: '#/components/schemas/Location'
+        departure_datetime:
+          type: datetime
+          description: The trip's start date.
+          example: 2019-01-01
+        max_passengers:
+          type: integer
+          description: The maximum number of passengers.
+          example: 4
+        price:
+          type: float
+          description: The trip's price.
+          example: 10.5
+        driver:
+          type: object
+          $ref: '#/components/schemas/User'
+        content:
+          type: string
+          description: The trip's details.
+          nullable: true
+
+    Location:
+      type: object
+      properties:
+        id:
+          type: uuid
+          description: The location's ID.
+          example: e6b7c8d9-e0f1-2a3b-4c5d-6e7f8g9h0i1j
+        name:
+          type: string
+          description: The location's name.
+          example: Paris
+        coordinates:
+          type: object
+          $ref: '#/components/schemas/Coordinates'
+
+    Coordinates:
+      type: object
+      properties:
+        latitude:
+          type: float
+          description: The location's latitude.
+          example: 48.8566
+        longitude:
+          type: float
+          description: The location's longitude.
+          example: 2.3522
+
+    User:
+      type: object
+      properties:
+        id:
+          type: uuid
+          description: The user's ID.
+          example: e6b7c8d9-e0f1-2a3b-4c5d-6e7f8g9h0i1j
+        email:
+          type: string
+          description: The user's email address.
+          example: john@doe.com
+        fullname:
+          type: string
+          description: The user's full name.
+          example: John Doe
