@@ -30,3 +30,32 @@
         description: Not Found
       500:
         description: Internal Server Error
+
+  post:
+    summary: Create a trip
+    description: Create a trip
+    operationId: createTrip
+    tags:
+      - Trips
+    requestBody:
+      description: Trip object that needs to be added
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateTrip'
+    responses:
+      200:
+        description: Trip created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      401:
+        description: Unauthorized
+      403:
+        description: Forbidden
+      404:
+        description: Not Found
+      500:
+        description: Internal Server Error

@@ -151,6 +151,46 @@ components:
           description: The trip's details.
           nullable: true
 
+    CreateTrip:
+      type: object
+      properties:
+        departure_location:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The location's name.
+              example: Paris
+            coordinates:
+              type: object
+              $ref: '#/components/schemas/Coordinates'
+        arrival_location:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The location's name.
+              example: Paris
+            coordinates:
+              type: object
+              $ref: '#/components/schemas/Coordinates'
+        departure_datetime:
+          type: datetime
+          description: The trip's start date.
+          example: 2019-01-01
+        max_passengers:
+          type: integer
+          description: The maximum number of passengers.
+          example: 4
+        price:
+          type: float
+          description: The trip's price.
+          example: 10.5
+        content:
+          type: string
+          description: The trip's details.
+          nullable: true
+
     Location:
       type: object
       properties:

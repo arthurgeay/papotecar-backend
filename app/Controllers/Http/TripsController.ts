@@ -50,7 +50,11 @@ export default class TripsController {
       content: payload.content,
     })
 
-    return trip
+    await trip.load('driver')
+    await trip.load('departureLocation')
+    await trip.load('arrivalLocation')
+
+    return await trip
 
     // TODO : A faire plus tard pour la création d'un trip
     // TODO : Conducteur ne doit pas être passager sur un autre trajet à la même date

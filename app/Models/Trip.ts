@@ -7,10 +7,14 @@ export default class Trip extends BaseModel {
   @column({ isPrimary: true })
   public id: string
 
-  @column()
+  @column({
+    serializeAs: null,
+  })
   public departureLocationId: string
 
-  @column()
+  @column({
+    serializeAs: null,
+  })
   public arrivalLocationId: string
 
   @column()
@@ -22,7 +26,9 @@ export default class Trip extends BaseModel {
   @column()
   public price: number
 
-  @column()
+  @column({
+    serializeAs: null,
+  })
   public driverId: string
 
   @column()
@@ -41,11 +47,13 @@ export default class Trip extends BaseModel {
 
   @belongsTo(() => Location, {
     foreignKey: 'departureLocationId',
+    serializeAs: 'departure_location',
   })
   public departureLocation: BelongsTo<typeof Location>
 
   @belongsTo(() => Location, {
     foreignKey: 'arrivalLocationId',
+    serializeAs: 'arrival_location',
   })
   public arrivalLocation: BelongsTo<typeof Location>
 }
