@@ -1,4 +1,3 @@
-import { Point } from './../app/Models/Location'
 import { validator } from '@ioc:Adonis/Core/Validator'
 /*
 |--------------------------------------------------------------------------

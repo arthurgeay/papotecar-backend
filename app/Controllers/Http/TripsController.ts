@@ -3,6 +3,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Trip from 'App/Models/Trip'
 import CreateTripValidator from 'App/Validators/CreateTripValidator'
 import Location from 'App/Models/Location'
+import LocationService from 'App/Services/LocationService'
 
 export default class TripsController {
   public async index({ request }: HttpContextContract) {
@@ -28,50 +29,17 @@ export default class TripsController {
       return response.status(400).send({ message: 'Driver already booked' })
     }
 
-    const existingDepartureLocation = await Location.query()
-      .whereRaw('name = ? AND coordinates ~= POINT(?, ?)', [
-        payload.departure_location.name,
-        payload.departure_location.longitude,
-        payload.departure_location.latitude,
-      ])
-      .first()
+    const departureLocationId = await LocationService.getLocation(
+      payload.departure_location.name,
+      payload.departure_location.longitude,
+      payload.departure_location.latitude
+    )
 
-    let departureLocationId
-    let arrivalLocationId
-
-    if (existingDepartureLocation) {
-      departureLocationId = existingDepartureLocation?.$attributes.id
-    } else {
-      const newLocation = await Location.create({
-        name: payload.departure_location.name,
-        coordinates: {
-          longitude: payload.departure_location.longitude,
-          latitude: payload.departure_location.latitude,
-        },
-      })
-      departureLocationId = newLocation.id
-    }
-
-    const existingArrivalLocation = await Location.query()
-      .whereRaw('name = ? AND coordinates ~= POINT(?, ?)', [
-        payload.arrival_location.name,
-        payload.arrival_location.longitude,
-        payload.arrival_location.latitude,
-      ])
-      .first()
-
-    if (existingArrivalLocation) {
-      arrivalLocationId = existingArrivalLocation?.$attributes.id
-    } else {
-      const newLocation = await Location.create({
-        name: payload.arrival_location.name,
-        coordinates: {
-          longitude: payload.arrival_location.longitude,
-          latitude: payload.arrival_location.latitude,
-        },
-      })
-      arrivalLocationId = newLocation.id
-    }
+    const arrivalLocationId = await LocationService.getLocation(
+      payload.arrival_location.name,
+      payload.arrival_location.longitude,
+      payload.arrival_location.latitude
+    )
 
     return await Trip.create({
       departureLocationId,
@@ -82,16 +50,16 @@ export default class TripsController {
       driverId: auth.user!.id,
       content: payload.content,
     })
-
-    // TODO: Validateur
-    // Date de départ > Date actuelle
-    // Max passagers > 0
-    // Prix > 0 && <= 100
-    // Lieu de départ != lieu d'arrivée
-    // Conducteur ne doit pas déjà être conducteur sur un autre trajet à la même date
-
-    // TODO : A faire plus tard
-    // TODO : Conducteur ne doit pas être passager sur un autre trajet à la même date
-    // TODO : Créer également une conversation et un message de base
   }
 }
+
+// TODO: Validateur
+// Date de départ > Date actuelle
+// Max passagers > 0
+// Prix > 0 && <= 100
+// Lieu de départ != lieu d'arrivée
+// Conducteur ne doit pas déjà être conducteur sur un autre trajet à la même date
+
+// TODO : A faire plus tard
+// TODO : Conducteur ne doit pas être passager sur un autre trajet à la même date
+// TODO : Créer également une conversation et un message de base
