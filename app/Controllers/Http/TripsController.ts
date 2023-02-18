@@ -2,7 +2,6 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import Trip from 'App/Models/Trip'
 import CreateTripValidator from 'App/Validators/CreateTripValidator'
-import Location from 'App/Models/Location'
 import LocationService from 'App/Services/LocationService'
 
 export default class TripsController {
@@ -41,7 +40,7 @@ export default class TripsController {
       payload.arrival_location.latitude
     )
 
-    return await Trip.create({
+    const trip = await Trip.create({
       departureLocationId,
       arrivalLocationId,
       departureDatetime: payload.departure_datetime,
@@ -50,16 +49,11 @@ export default class TripsController {
       driverId: auth.user!.id,
       content: payload.content,
     })
+
+    return trip
+
+    // TODO : A faire plus tard pour la création d'un trip
+    // TODO : Conducteur ne doit pas être passager sur un autre trajet à la même date
+    // TODO : Créer également une conversation et un message de base
   }
 }
-
-// TODO: Validateur
-// Date de départ > Date actuelle
-// Max passagers > 0
-// Prix > 0 && <= 100
-// Lieu de départ != lieu d'arrivée
-// Conducteur ne doit pas déjà être conducteur sur un autre trajet à la même date
-
-// TODO : A faire plus tard
-// TODO : Conducteur ne doit pas être passager sur un autre trajet à la même date
-// TODO : Créer également une conversation et un message de base

@@ -7,14 +7,10 @@ export default class Trip extends BaseModel {
   @column({ isPrimary: true })
   public id: string
 
-  @column({
-    serializeAs: null,
-  })
+  @column()
   public departureLocationId: string
 
-  @column({
-    serializeAs: null,
-  })
+  @column()
   public arrivalLocationId: string
 
   @column()
@@ -26,9 +22,7 @@ export default class Trip extends BaseModel {
   @column()
   public price: number
 
-  @column({
-    serializeAs: null,
-  })
+  @column()
   public driverId: string
 
   @column()

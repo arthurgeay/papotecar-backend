@@ -4,7 +4,7 @@
     description: Get all trips
     operationId: getTrips
     tags:
-      - trips
+      - Trips
     parameters:
       - name: page
         in: query
