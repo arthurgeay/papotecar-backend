@@ -1,7 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
-type Point = {
+export type Point = {
   longitude: number
   latitude: number
 }
