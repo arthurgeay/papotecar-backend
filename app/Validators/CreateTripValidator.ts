@@ -31,16 +31,24 @@ export default class CreateTripValidator {
     content: schema.string.optional(),
   })
 
-  /**
-   * Custom messages for validation failures. You can make use of dot notation `(.)`
-   * for targeting nested fields and array expressions `(*)` for targeting all
-   * children of an array. For example:
-   *
-   * {
-   *   'profile.username.required': 'Username is required',
-   *   'scores.*.number': 'Define scores as valid numbers'
-   * }
-   *
-   */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'departure_location.required': 'Le lieu de départ est requis',
+    'departure_location.uniqueGpsCoordinates':
+      'Le lieu de départ doit être différent du lieu d’arrivée',
+    'arrival_location.required': 'Le lieu d’arrivée est requis',
+    'arrival_location.uniqueGpsCoordinates':
+      'Le lieu d’arrivée doit être différent du lieu de départ',
+    'departure_datetime.required': 'La date de départ est requise',
+    'departure_datetime.afterOrEqual':
+      'La date de départ doit être supérieure ou égale à la date actuelle',
+    'departure_datetime.date.format': 'La date de départ doit être une date valide',
+    'max_passengers.required': 'Le nombre de passagers est requis',
+    'max_passengers.number': 'Le nombre de passagers doit être un nombre',
+    'max_passengers.range':
+      'Le nombre de passagers doit être compris entre {{ options.start }} et {{ options.stop }}',
+    'price.required': 'Le prix est requis',
+    'price.number': 'Le prix doit être un nombre',
+    'price.range': 'Le prix doit être compris entre {{ options.start }} et {{ options.stop }}',
+    'content.string': 'Le contenu doit être une chaîne de caractères',
+  }
 }
