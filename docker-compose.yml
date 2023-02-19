@@ -20,13 +20,13 @@ services:
       - ${REDIS_PORT}:6379
     volumes:
       - ./db-redis:/data
-  
+
   redisinsight:
     image: redislabs/redisinsight:latest
     ports:
       - '8001:8001'
     volumes:
-      - ./redisinsight:/db 
+      - ./redisinsight:/db
 
   mailhog:
     image: mailhog/mailhog

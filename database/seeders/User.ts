@@ -6,10 +6,13 @@ export default class extends BaseSeeder {
   public async run() {
     await UserFactory.createMany(10)
 
-    await User.create({
-      email: 'test@papotecar.com',
-      fullname: 'Test',
-      password: 'password123',
-    })
+    await User.updateOrCreate(
+      { email: 'test@papotecar.com' },
+      {
+        email: 'test@papotecar.com',
+        fullname: 'Test',
+        password: 'password123',
+      }
+    )
   }
 }

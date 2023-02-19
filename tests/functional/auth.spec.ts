@@ -7,41 +7,43 @@ test.group('Register', (group) => {
     return () => Database.rollbackGlobalTransaction()
   })
 
-  test('it should validation failed', async ({ client, assert }, row) => {
-    const response = await client.post('/register').json(row.data)
+  test('it should validation failed')
+    .with([
+      {
+        data: { email: 'fake@gmail.com', password: 'test' },
+        error: 'Le nom complet est requis',
+      },
+      {
+        data: { fullname: 'li', email: 'fake@gmail.com', password: 'test' },
+        error: 'Le nom complet doit contenir au moins 3 caractères',
+      },
+      {
+        data: { fullname: 'Test', password: 'test' },
+        error: "L'email est requis",
+      },
+      {
+        data: { fullname: 'Test', email: 'fake', password: 'test' },
+        error: "L'email n'est pas valide",
+      },
+      {
+        data: { fullname: 'Test', email: 'fake@gmail.com' },
+        error: 'Le mot de passe est requis',
+      },
+      {
+        data: { fullname: 'Test', email: 'fake@gmail.com', password: 'e' },
+        error: 'Le mot de passe doit contenir au moins 8 caractères',
+      },
+      {
+        data: { fullname: 'Test', email: 'test@papotecar.com', password: 'test12334' },
+        error: 'Cet email est déjà utilisé',
+      },
+    ])
+    .run(async ({ client, assert }, row) => {
+      const response = await client.post('/register').json(row.data)
 
-    assert.equal(response.status(), 422)
-    assert.equal(response.body().errors[0].message, row.error)
-  }).with([
-    {
-      data: { email: 'fake@gmail.com', password: 'test' },
-      error: 'Le nom complet est requis',
-    },
-    {
-      data: { fullname: 'li', email: 'fake@gmail.com', password: 'test' },
-      error: 'Le nom complet doit contenir au moins 3 caractères',
-    },
-    {
-      data: { fullname: 'Test', password: 'test' },
-      error: "L'email est requis",
-    },
-    {
-      data: { fullname: 'Test', email: 'fake', password: 'test' },
-      error: "L'email n'est pas valide",
-    },
-    {
-      data: { fullname: 'Test', email: 'fake@gmail.com' },
-      error: 'Le mot de passe est requis',
-    },
-    {
-      data: { fullname: 'Test', email: 'fake@gmail.com', password: 'e' },
-      error: 'Le mot de passe doit contenir au moins 8 caractères',
-    },
-    {
-      data: { fullname: 'Test', email: 'test@papotecar.com', password: 'test12334' },
-      error: 'Cet email est déjà utilisé',
-    },
-  ])
+      assert.equal(response.status(), 422)
+      assert.equal(response.body().errors[0].message, row.error)
+    })
 
   test('it should register user', async ({ client, assert }) => {
     const response = await client.post('/register').json({
@@ -61,25 +63,27 @@ test.group('Login', (group) => {
     return () => Database.rollbackGlobalTransaction()
   })
 
-  test('it should validation failed', async ({ client, assert }, row) => {
-    const response = await client.post('/login').json(row.data)
+  test('it should validation failed')
+    .with([
+      {
+        data: { password: 'test' },
+        error: "L'email est requis",
+      },
+      {
+        data: { email: 'fake', password: 'test' },
+        error: "L'email n'est pas valide",
+      },
+      {
+        data: { email: 'fake@gmail.com' },
+        error: 'Le mot de passe est requis',
+      },
+    ])
+    .run(async ({ client, assert }, row) => {
+      const response = await client.post('/login').json(row.data)
 
-    assert.equal(response.status(), 422)
-    assert.equal(response.body().errors[0].message, row.error)
-  }).with([
-    {
-      data: { password: 'test' },
-      error: "L'email est requis",
-    },
-    {
-      data: { email: 'fake', password: 'test' },
-      error: "L'email n'est pas valide",
-    },
-    {
-      data: { email: 'fake@gmail.com' },
-      error: 'Le mot de passe est requis',
-    },
-  ])
+      assert.equal(response.status(), 422)
+      assert.equal(response.body().errors[0].message, row.error)
+    })
 
   test('it should return that user not found', async ({ client, assert }) => {
     const response = await client.post('/login').json({
