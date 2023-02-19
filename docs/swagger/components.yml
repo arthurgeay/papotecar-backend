@@ -151,7 +151,7 @@ components:
           description: The trip's details.
           nullable: true
 
-    CreateTrip:
+    TripBody:
       type: object
       properties:
         departure_location:

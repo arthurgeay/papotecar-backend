@@ -5,6 +5,8 @@
     operationId: getTrips
     tags:
       - Trips
+    security:
+      - BearerAuth: []
     parameters:
       - name: page
         in: query
@@ -37,16 +39,57 @@
     operationId: createTrip
     tags:
       - Trips
+    security:
+      - BearerAuth: []
     requestBody:
       description: Trip object that needs to be added
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateTrip'
+            $ref: '#/components/schemas/TripBody'
     responses:
       200:
         description: Trip created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      401:
+        description: Unauthorized
+      403:
+        description: Forbidden
+      404:
+        description: Not Found
+      500:
+        description: Internal Server Error
+
+/trips/{tripId}:
+  put:
+    summary: Update a trip
+    description: Update a trip
+    operationId: updateTrip
+    tags:
+      - Trips
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: tripId
+        in: path
+        description: ID of trip to update
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: Trip object that needs to be updated
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TripBody'
+    responses:
+      200:
+        description: Trip updated
         content:
           application/json:
             schema:
