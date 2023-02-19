@@ -13,10 +13,10 @@ export default class extends BaseSeeder {
       .createMany(10)
 
     const user = await User.findBy('email', 'test@papotecar.com')
-    const userHaveTrip = await Trip.query().where('driverId', user!.id).first()
+    const userHaveTrip = await Trip.query().where('driverId', user!.id)
 
     // Create a trip for the user if he doesn't have one
-    if (!userHaveTrip) {
+    if (userHaveTrip.length === 0) {
       const departureLocation = await Location.findBy('name', 'Nantes')
       const arrivalLocation = await Location.findBy('name', 'Paris')
       const date = new Date()
@@ -27,6 +27,16 @@ export default class extends BaseSeeder {
         arrivalLocationId: arrivalLocation!.id,
         driverId: user!.id,
         departureDatetime: DateTime.fromJSDate(date),
+      }).create()
+
+      const otherDate = new Date('2026-01-01')
+      otherDate.setHours(0, 0, 0, 0)
+
+      await TripFactory.merge({
+        departureLocationId: departureLocation!.id,
+        arrivalLocationId: arrivalLocation!.id,
+        driverId: user!.id,
+        departureDatetime: DateTime.fromJSDate(otherDate),
       }).create()
     }
   }

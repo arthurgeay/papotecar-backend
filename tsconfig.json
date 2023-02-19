@@ -32,7 +32,8 @@
       "@adonisjs/auth",
       "@adonisjs/lucid",
       "@adonisjs/redis",
-      "adonis5-swagger"
+      "adonis5-swagger",
+      "@adonisjs/bouncer"
     ]
   }
 }

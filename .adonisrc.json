@@ -5,7 +5,8 @@
     "@adonisjs/core/build/commands/index.js",
     "@adonisjs/repl/build/commands",
     "@adonisjs/lucid/build/commands",
-    "adonis5-swagger/build/commands"
+    "adonis5-swagger/build/commands",
+    "@adonisjs/bouncer/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
   "aliases": {
@@ -20,7 +21,8 @@
     {
       "file": "./start/validator",
       "environment": ["web", "test"]
-    }
+    },
+    "./start/bouncer"
   ],
   "providers": [
     "./providers/AppProvider",
@@ -28,7 +30,8 @@
     "@adonisjs/auth",
     "@adonisjs/lucid",
     "@adonisjs/redis",
-    "adonis5-swagger"
+    "adonis5-swagger",
+    "@adonisjs/bouncer"
   ],
   "aceProviders": ["@adonisjs/repl"],
   "tests": {
