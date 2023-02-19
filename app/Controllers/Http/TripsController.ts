@@ -105,6 +105,17 @@ export default class TripsController {
     // TODO : Envoyer un email pour prévenir les passagers que le trajet a été modifié par le conducteur
   }
 
+  public async destroy({ params, bouncer, response }: HttpContextContract) {
+    const trip = await Trip.findOrFail(params.id)
+    await bouncer.with('TripPolicy').authorize('delete', trip)
+    await trip.delete()
+
+    return response.status(204)
+
+    // TODO : A faire plus tard pour la mise à jour d'un trip
+    // Envoyer un email pour prévenir les passagers que le trajet a été supprimé par le conducteur
+  }
+
   private async getOrCreateLocations(departureLocation: Location, arrivalLocation: Location) {
     const departureLocationId = await LocationService.getLocation(
       departureLocation.name,

@@ -6,4 +6,8 @@ export default class TripPolicy extends BasePolicy {
   public async update(user: User, trip: Trip) {
     return user.id === trip.driverId
   }
+
+  public async delete(user: User, trip: Trip) {
+    return user.id === trip.driverId
+  }
 }
