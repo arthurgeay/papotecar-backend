@@ -54,6 +54,7 @@ export default class TripsController {
     await trip.load('driver')
     await trip.load('departureLocation')
     await trip.load('arrivalLocation')
+    await trip.load('passengers')
 
     return await trip
 
@@ -98,6 +99,7 @@ export default class TripsController {
     await trip.load('driver')
     await trip.load('departureLocation')
     await trip.load('arrivalLocation')
+    await trip.load('passengers')
 
     return trip
 
