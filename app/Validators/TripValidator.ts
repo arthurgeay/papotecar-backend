@@ -45,7 +45,7 @@ export default class TripValidator {
     'departure_datetime.required': 'La date de départ est requise',
     'departure_datetime.afterOrEqual':
       'La date de départ doit être supérieure ou égale à la date actuelle',
-    'departure_datetime.date.format': 'La date de départ doit être une date valide',
+    'departure_datetime.date.format': 'La date de départ doit être une date valide (ISO format)',
     'max_passengers.required': 'Le nombre de passagers est requis',
     'max_passengers.number': 'Le nombre de passagers doit être un nombre',
     'max_passengers.range':

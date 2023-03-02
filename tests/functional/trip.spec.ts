@@ -97,7 +97,7 @@ test.group('Create trip', (group) => {
           {
             rule: 'date.format',
             field: 'departure_datetime',
-            message: 'La date de départ doit être une date valide',
+            message: 'La date de départ doit être une date valide (ISO format)',
             args: {},
           },
           {
@@ -224,7 +224,7 @@ test.group('Create trip', (group) => {
       })
 
     assert.equal(response.status(), 400)
-    assert.equal(response.body().message, 'Driver already booked')
+    assert.equal(response.body().message, 'E_DRIVER_ALREADY_BOOKED: Driver already booked')
   })
 
   test('it should create trip', async ({ client, assert }) => {
@@ -352,7 +352,7 @@ test.group('Update trip', (group) => {
           {
             rule: 'date.format',
             field: 'departure_datetime',
-            message: 'La date de départ doit être une date valide',
+            message: 'La date de départ doit être une date valide (ISO format)',
             args: {},
           },
           {
@@ -491,7 +491,7 @@ test.group('Update trip', (group) => {
       })
 
     assert.equal(response.status(), 400)
-    assert.equal(response.body().message, 'Driver already booked')
+    assert.equal(response.body().message, 'E_DRIVER_ALREADY_BOOKED: Driver already booked')
   })
 
   test('it should return that trip is updated', async ({ client, assert }) => {

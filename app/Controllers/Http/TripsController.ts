@@ -1,14 +1,9 @@
-import { Point } from './../../Models/Location'
+import { TripService } from './../../Services/TripService'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import Trip from 'App/Models/Trip'
 import TripValidator from 'App/Validators/TripValidator'
 import LocationService from 'App/Services/LocationService'
-
-type Location = {
-  name: string
-  coordinates: Point
-}
 
 const DEFAULT_PAGE_LIMIT = 10
 
@@ -24,19 +19,12 @@ export default class TripsController {
       .paginate(page, DEFAULT_PAGE_LIMIT)
   }
 
-  public async store({ request, response, auth }: HttpContextContract) {
+  public async store({ request, auth }: HttpContextContract) {
     const payload = await request.validate(TripValidator)
 
-    const driverAlreadyBooked = await Trip.query()
-      .where('driver_id', auth.user!.id)
-      .where('departure_datetime', payload.departure_datetime.toString())
-      .first()
+    await TripService.isDriverOrPassengerAlreadyBooked(auth.user!, payload.departure_datetime)
 
-    if (driverAlreadyBooked) {
-      return response.status(400).send({ message: 'Driver already booked' })
-    }
-
-    const { departureLocationId, arrivalLocationId } = await this.getOrCreateLocations(
+    const { departureLocationId, arrivalLocationId } = await LocationService.getOrCreateLocations(
       payload.departure_location,
       payload.arrival_location
     )
@@ -59,28 +47,19 @@ export default class TripsController {
     return await trip
 
     // TODO : A faire plus tard pour la création d'un trip
-    // TODO : Conducteur ne doit pas être passager sur un autre trajet à la même date
     // TODO : Créer également une conversation et un message de base
   }
 
-  public async update({ request, response, params, bouncer, auth }: HttpContextContract) {
+  public async update({ request, params, bouncer, auth }: HttpContextContract) {
     const trip = await Trip.findOrFail(params.id)
 
     await bouncer.with('TripPolicy').authorize('update', trip)
 
     const payload = await request.validate(TripValidator)
 
-    const driverAlreadyBooked = await Trip.query()
-      .where('driver_id', auth.user!.id)
-      .where('departure_datetime', payload.departure_datetime.toString())
-      .whereNot('id', trip.id)
-      .first()
+    await TripService.isDriverOrPassengerAlreadyBooked(auth.user!, payload.departure_datetime, trip)
 
-    if (driverAlreadyBooked) {
-      return response.status(400).send({ message: 'Driver already booked' })
-    }
-
-    const { departureLocationId, arrivalLocationId } = await this.getOrCreateLocations(
+    const { departureLocationId, arrivalLocationId } = await LocationService.getOrCreateLocations(
       payload.departure_location,
       payload.arrival_location
     )
@@ -104,7 +83,6 @@ export default class TripsController {
     return trip
 
     // TODO : A faire plus tard pour la mise à jour d'un trip
-    // TODO : Conducteur ne doit pas être passager sur un autre trajet à la même date
     // TODO : Envoyer un email pour prévenir les passagers que le trajet a été modifié par le conducteur
   }
 
@@ -113,25 +91,11 @@ export default class TripsController {
     await bouncer.with('TripPolicy').authorize('delete', trip)
     await trip.delete()
 
+    // TODO : Supprimer les passagers
+
     return response.status(204)
 
     // TODO : A faire plus tard pour la mise à jour d'un trip
     // Envoyer un email pour prévenir les passagers que le trajet a été supprimé par le conducteur
-  }
-
-  private async getOrCreateLocations(departureLocation: Location, arrivalLocation: Location) {
-    const departureLocationId = await LocationService.getLocation(
-      departureLocation.name,
-      departureLocation.coordinates.longitude,
-      departureLocation.coordinates.latitude
-    )
-
-    const arrivalLocationId = await LocationService.getLocation(
-      arrivalLocation.name,
-      arrivalLocation.coordinates.longitude,
-      arrivalLocation.coordinates.latitude
-    )
-
-    return { departureLocationId, arrivalLocationId }
   }
 }
