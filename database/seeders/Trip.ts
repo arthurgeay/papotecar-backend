@@ -3,6 +3,7 @@ import Location from 'App/Models/Location'
 import Trip from 'App/Models/Trip'
 import User from 'App/Models/User'
 import TripFactory from 'Database/factories/TripFactory'
+import UserFactory from 'Database/factories/UserFactory'
 import { DateTime } from 'luxon'
 
 export default class extends BaseSeeder {
@@ -45,6 +46,19 @@ export default class extends BaseSeeder {
         driverId: user!.id,
         departureDatetime: DateTime.fromJSDate(otherDate),
       }).create()
+
+      const driver = await UserFactory.create()
+      const dateWithPassenger = new Date('2027-01-01')
+      dateWithPassenger.setHours(0, 0, 0, 0)
+
+      const tripWithPassenger = await TripFactory.merge({
+        departureLocationId: departureLocation!.id,
+        arrivalLocationId: arrivalLocation!.id,
+        driverId: driver.id,
+        departureDatetime: DateTime.fromJSDate(dateWithPassenger),
+      }).create()
+
+      await tripWithPassenger.related('passengers').attach([user!.id])
     }
   }
 }
