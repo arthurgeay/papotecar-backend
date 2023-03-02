@@ -10,6 +10,13 @@ export default class extends BaseSeeder {
     await TripFactory.with('driver')
       .with('departureLocation')
       .with('arrivalLocation')
+      .with('passengers', 3, (passenger) => {
+        passenger.pivotAttributes([
+          { is_approve: true },
+          { is_approve: false },
+          { is_approve: true },
+        ])
+      })
       .createMany(10)
 
     const user = await User.findBy('email', 'test@papotecar.com')

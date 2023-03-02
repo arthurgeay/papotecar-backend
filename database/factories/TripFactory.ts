@@ -14,4 +14,5 @@ export default Factory.define(Trip, ({ faker }) => {
   .relation('driver', () => UserFactory)
   .relation('departureLocation', () => LocationFactory)
   .relation('arrivalLocation', () => LocationFactory)
+  .relation('passengers', () => UserFactory)
   .build()

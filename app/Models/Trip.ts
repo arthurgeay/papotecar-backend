@@ -1,5 +1,12 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  BelongsTo,
+  belongsTo,
+  column,
+  ManyToMany,
+  manyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import Location from './Location'
 import User from './User'
 
@@ -56,4 +63,15 @@ export default class Trip extends BaseModel {
     serializeAs: 'arrival_location',
   })
   public arrivalLocation: BelongsTo<typeof Location>
+
+  @manyToMany(() => User, {
+    pivotTable: 'passengers',
+    localKey: 'id',
+    relatedKey: 'id',
+    pivotForeignKey: 'trip_id',
+    pivotRelatedForeignKey: 'user_id',
+    pivotTimestamps: true,
+    pivotColumns: ['is_approve'],
+  })
+  public passengers: ManyToMany<typeof User>
 }
