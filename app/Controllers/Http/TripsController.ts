@@ -20,6 +20,7 @@ export default class TripsController {
       .preload('driver')
       .preload('departureLocation')
       .preload('arrivalLocation')
+      .preload('passengers')
       .paginate(page, DEFAULT_PAGE_LIMIT)
   }
 
