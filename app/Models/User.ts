@@ -1,6 +1,13 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
+import {
+  column,
+  beforeSave,
+  BaseModel,
+  manyToMany,
+  ManyToMany,
+  computed,
+} from '@ioc:Adonis/Lucid/Orm'
 import Trip from './Trip'
 
 export default class User extends BaseModel {
@@ -39,4 +46,10 @@ export default class User extends BaseModel {
     pivotColumns: ['is_approve'],
   })
   public trips: ManyToMany<typeof Trip>
+
+  @computed({ serializeAs: 'is_approved' })
+  public get isApproved() {
+    const approved = this.$extras.pivot_is_approve
+    return approved
+  }
 }

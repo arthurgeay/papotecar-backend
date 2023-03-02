@@ -5,8 +5,8 @@ export default class extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.uuid('user_id').unsigned().references('users.id').notNullable()
-      table.uuid('trip_id').unsigned().references('trips.id').notNullable()
+      table.uuid('user_id').unsigned().references('users.id').notNullable().onDelete('CASCADE')
+      table.uuid('trip_id').unsigned().references('trips.id').notNullable().onDelete('CASCADE')
       table.boolean('is_approve').defaultTo(false)
 
       table.primary(['user_id', 'trip_id'])
