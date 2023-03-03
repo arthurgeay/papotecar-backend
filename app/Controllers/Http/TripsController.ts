@@ -4,6 +4,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Trip from 'App/Models/Trip'
 import TripValidator from 'App/Validators/TripValidator'
 import LocationService from 'App/Services/LocationService'
+import { DateTime } from 'luxon'
 
 type Location = {
   name: string
@@ -13,13 +14,29 @@ type Location = {
 const DEFAULT_PAGE_LIMIT = 10
 
 export default class TripsController {
-  public async index({ request }: HttpContextContract) {
+  public async index({ request, response }: HttpContextContract) {
     const page = request.input('page', 1)
+    const departureDatetimeFilter = request.input('departure_datetime', DateTime.now())
+    const departureLocationFilter = request.input('departure_location')
+    const arrivalLocation = request.input('arrival_location')
+    const maxPassengersFilter = request.input('max_passengers', 1)
+
+    if (!departureLocationFilter || !arrivalLocation) {
+      return response.status(400).send({
+        message: 'departure_location and arrival_location are required',
+      })
+    }
 
     return await Trip.query()
       .preload('driver')
-      .preload('departureLocation')
-      .preload('arrivalLocation')
+      .preload('departureLocation', (departureLocationQuery) => {
+        departureLocationQuery.where('name', departureLocationFilter)
+      })
+      .preload('arrivalLocation', (arrivalLocationQuery) => {
+        arrivalLocationQuery.where('name', arrivalLocation)
+      })
+      .andWhere('maxPassengers', '>=', maxPassengersFilter)
+      .andWhere('departureDatetime', '>=', DateTime.fromISO(departureDatetimeFilter).toSQL())
       .paginate(page, DEFAULT_PAGE_LIMIT)
   }
 
