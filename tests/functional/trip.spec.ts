@@ -97,7 +97,7 @@ test.group('Create trip', (group) => {
           {
             rule: 'date.format',
             field: 'departure_datetime',
-            message: 'La date de départ doit être une date valide',
+            message: 'La date de départ doit être une date valide (ISO format)',
             args: {},
           },
           {
@@ -224,7 +224,47 @@ test.group('Create trip', (group) => {
       })
 
     assert.equal(response.status(), 400)
-    assert.equal(response.body().message, 'Driver already booked')
+    assert.equal(response.body().message, 'E_DRIVER_ALREADY_BOOKED: Driver already booked')
+  })
+
+  test('it should return that user is a passenger in another trip', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+
+    const trip = await Trip.query()
+      .whereHas('passengers', (query) => {
+        query.where('user_id', user!.id)
+      })
+      .first()
+
+    const response = await client
+      .post('/trips')
+      .loginAs(user!)
+      .json({
+        departure_location: {
+          name: 'Passaic',
+          coordinates: {
+            longitude: -153.2613,
+            latitude: 19.581,
+          },
+        },
+        arrival_location: {
+          name: 'Paris',
+          coordinates: {
+            longitude: -1,
+            latitude: 12,
+          },
+        },
+        departure_datetime: trip?.departureDatetime,
+        max_passengers: 2,
+        price: 100,
+        content: null,
+      })
+
+    assert.equal(response.status(), 400)
+    assert.equal(
+      response.body().message,
+      'E_USER_ALREADY_BOOKED: User is a passenger on a trip on the same date'
+    )
   })
 
   test('it should create trip', async ({ client, assert }) => {
@@ -352,7 +392,7 @@ test.group('Update trip', (group) => {
           {
             rule: 'date.format',
             field: 'departure_datetime',
-            message: 'La date de départ doit être une date valide',
+            message: 'La date de départ doit être une date valide (ISO format)',
             args: {},
           },
           {
@@ -491,7 +531,53 @@ test.group('Update trip', (group) => {
       })
 
     assert.equal(response.status(), 400)
-    assert.equal(response.body().message, 'Driver already booked')
+    assert.equal(response.body().message, 'E_DRIVER_ALREADY_BOOKED: Driver already booked')
+  })
+
+  test('it should return that user is a passenger in another trip', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
+
+    const trip = await Trip.query()
+      .where('driver_id', user!.id)
+      .where('departure_datetime', date)
+      .first()
+    console.log({ trip })
+
+    const newDate = new Date('2027-01-01')
+    newDate.setHours(0, 0, 0, 0)
+
+    const response = await client
+      .put(`/trips/${trip!.id}`)
+      .loginAs(user!)
+      .json({
+        departure_location: {
+          name: 'Passaic',
+          coordinates: {
+            longitude: -153.2613,
+            latitude: 19.581,
+          },
+        },
+        arrival_location: {
+          name: 'Paris',
+          coordinates: {
+            longitude: -1,
+            latitude: 12,
+          },
+        },
+        departure_datetime: DateTime.fromJSDate(newDate),
+        max_passengers: 2,
+        price: 100,
+        content: null,
+      })
+
+    assert.equal(response.status(), 400)
+    assert.equal(
+      response.body().message,
+      'E_USER_ALREADY_BOOKED: User is a passenger on a trip on the same date'
+    )
   })
 
   test('it should return that trip is updated', async ({ client, assert }) => {

@@ -150,6 +150,10 @@ components:
           type: string
           description: The trip's details.
           nullable: true
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Passenger'
 
     TripBody:
       type: object
@@ -233,3 +237,23 @@ components:
           type: string
           description: The user's full name.
           example: John Doe
+
+    Passenger:
+      type: object
+      properties:
+        id:
+          type: uuid
+          description: The user's ID.
+          example: e6b7c8d9-e0f1-2a3b-4c5d-6e7f8g9h0i1j
+        email:
+          type: string
+          description: The user's email address.
+          example: john@doe.com
+        fullname:
+          type: string
+          description: The user's full name.
+          example: John Doe
+        is_approved:
+          type: boolean
+          description: The passenger's approval status.
+          example: true
