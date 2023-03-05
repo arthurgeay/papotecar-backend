@@ -319,6 +319,15 @@ test.group('Update trip', (group) => {
     assert.equal(response.status(), 401)
   })
 
+  test('it should return that id is not an uuid', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+
+    const response = await client.put(`/trips/1`).loginAs(user!)
+
+    assert.equal(response.status(), 422)
+    assert.equal(response.body().errors[0].message, "L'identifiant doit être un UUID valide")
+  })
+
   test('it should return that trip does not exist', async ({ client, assert }) => {
     const user = await User.findBy('email', 'test@papotecar.com')
     const response = await client.put(`/trips/${uuid()}`).loginAs(user!).json({})
@@ -645,6 +654,15 @@ test.group('Delete trip', (group) => {
     const response = await client.delete(`/trips/${trip!.id}`)
 
     assert.equal(response.status(), 401)
+  })
+
+  test('it should return that id is not an uuid', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+
+    const response = await client.delete(`/trips/1`).loginAs(user!)
+
+    assert.equal(response.status(), 422)
+    assert.equal(response.body().errors[0].message, "L'identifiant doit être un UUID valide")
   })
 
   test('it should return that trip does not exist', async ({ client, assert }) => {

@@ -31,4 +31,5 @@ Route.group(() => {
   Route.post('/logout', 'AuthController.logout')
 
   Route.resource('trips', 'TripsController').apiOnly()
+  Route.post('/trips/:id/passengers', 'PassengersController.store')
 }).middleware('auth')
