@@ -128,3 +128,79 @@ test.group('Register as a passenger on trip', (group) => {
     assert.exists(response.body().passengers)
   })
 })
+
+test.group('Unregister a passenger', (group) => {
+  group.each.setup(async () => {
+    await Database.beginGlobalTransaction()
+    return () => Database.rollbackGlobalTransaction()
+  })
+
+  test('it should return that user is not authenticated', async ({ client, assert }) => {
+    const response = await client.delete(`/trips/${uuid()}/passengers/${uuid()}`)
+
+    assert.equal(response.status(), 401)
+  })
+
+  test('it should return that id is not an uuid', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+
+    const response = await client.delete(`/trips/1/passengers/1`).loginAs(user!)
+
+    assert.equal(response.status(), 422)
+    assert.equal(response.body().errors[0].message, "L'identifiant doit être un UUID valide")
+    assert.equal(response.body().errors[1].message, "L'identifiant doit être un UUID valide")
+  })
+
+  test('it should return that trip does not exist', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+    const response = await client.post(`/trips/${uuid()}/passengers/${user!.id}`).loginAs(user!)
+
+    assert.equal(response.status(), 404)
+  })
+
+  test('it should return that user cannot unregister for another passenger')
+    .with([
+      {
+        data: {
+          id: uuid(),
+        },
+      },
+      {
+        data: {
+          id: null,
+        },
+      },
+    ])
+    .run(async ({ client, assert }, row) => {
+      const user = await User.findBy('email', 'test@papotecar.com')
+
+      const trip = await Trip.query()
+        .leftJoin('passengers', 'passengers.trip_id', 'trips.id')
+        .whereNull('passengers.user_id')
+        .first()
+
+      const response = await client
+        .delete(`/trips/${trip!.id}/passengers/${row.data.id ? row.data.id : user!.id}`)
+        .loginAs(user!)
+
+      assert.equal(response.status(), 403)
+      console.log(
+        response.body().message,
+        'E_AUTHORIZATION_FAILURE: You cannot unregister for another passenger'
+      )
+    })
+
+  test('it should return that user is unregister successfully', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+
+    const trip = await Trip.query()
+      .whereHas('passengers', (query) => {
+        query.where('user_id', user!.id)
+      })
+      .first()
+
+    const response = await client.delete(`/trips/${trip!.id}/passengers/${user!.id}`).loginAs(user!)
+
+    assert.equal(response.status(), 204)
+  })
+})

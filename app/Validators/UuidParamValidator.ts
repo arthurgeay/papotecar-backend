@@ -7,6 +7,7 @@ export default class UuidParamValidator {
   public schema = schema.create({
     params: schema.object().members({
       id: schema.string({ trim: true }, [rules.uuid({ version: 4 })]),
+      passengerId: schema.string.optional({ trim: true }, [rules.uuid({ version: 4 })]),
     }),
   })
 
@@ -22,6 +23,6 @@ export default class UuidParamValidator {
    *
    */
   public messages: CustomMessages = {
-    'params.id.uuid': "L'identifiant doit être un UUID valide",
+    uuid: "L'identifiant doit être un UUID valide",
   }
 }
