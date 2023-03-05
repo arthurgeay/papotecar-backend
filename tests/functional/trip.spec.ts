@@ -342,6 +342,10 @@ test.group('Update trip', (group) => {
     const response = await client.put(`/trips/${trip!.id}`).loginAs(user!).json({})
 
     assert.equal(response.status(), 403)
+    assert.equal(
+      response.body().message,
+      'E_AUTHORIZATION_FAILURE: You cannot update a trip you are not the driver of'
+    )
   })
 
   test('it should validation failed')
@@ -553,7 +557,6 @@ test.group('Update trip', (group) => {
       .where('driver_id', user!.id)
       .where('departure_datetime', date)
       .first()
-    console.log({ trip })
 
     const newDate = new Date('2027-01-01')
     newDate.setHours(0, 0, 0, 0)
@@ -682,6 +685,10 @@ test.group('Delete trip', (group) => {
     const response = await client.delete(`/trips/${trip!.id}`).loginAs(user!)
 
     assert.equal(response.status(), 403)
+    assert.equal(
+      response.body().message,
+      'E_AUTHORIZATION_FAILURE: You cannot delete a trip you are not the driver of'
+    )
   })
 
   test('it should return that trip is deleted', async ({ client, assert }) => {
