@@ -59,6 +59,21 @@ export default class extends BaseSeeder {
       }).create()
 
       await tripWithPassenger.related('passengers').attach([user!.id])
+
+      await TripFactory.merge({
+        departureLocationId: departureLocation!.id,
+        arrivalLocationId: arrivalLocation!.id,
+        driverId: driver.id,
+        departureDatetime: DateTime.fromJSDate(date),
+      }).create()
+
+      const anotherDriver = await UserFactory.create()
+      await TripFactory.merge({
+        departureLocationId: departureLocation!.id,
+        arrivalLocationId: arrivalLocation!.id,
+        driverId: anotherDriver.id,
+        departureDatetime: DateTime.fromJSDate(dateWithPassenger),
+      }).create()
     }
   }
 }

@@ -4,6 +4,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Trip from 'App/Models/Trip'
 import TripValidator from 'App/Validators/TripValidator'
 import LocationService from 'App/Services/LocationService'
+import UuidParamValidator from 'App/Validators/UuidParamValidator'
 
 const DEFAULT_PAGE_LIMIT = 10
 
@@ -51,6 +52,8 @@ export default class TripsController {
   }
 
   public async update({ request, params, bouncer, auth }: HttpContextContract) {
+    await request.validate(UuidParamValidator)
+
     const trip = await Trip.findOrFail(params.id)
 
     await bouncer.with('TripPolicy').authorize('update', trip)
@@ -86,7 +89,9 @@ export default class TripsController {
     // TODO : Envoyer un email pour prévenir les passagers que le trajet a été modifié par le conducteur
   }
 
-  public async destroy({ params, bouncer, response }: HttpContextContract) {
+  public async destroy({ request, params, bouncer, response }: HttpContextContract) {
+    await request.validate(UuidParamValidator)
+
     const trip = await Trip.findOrFail(params.id)
     await bouncer.with('TripPolicy').authorize('delete', trip)
     await trip.delete()

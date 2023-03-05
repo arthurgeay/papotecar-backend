@@ -1,0 +1,65 @@
+/trips/{tripId}/passengers:
+  post:
+    summary: Register a passenger to a trip
+    description: Add a passenger to a trip
+    operationId: addPassengerToTrip
+    tags:
+      - Passengers
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: tripId
+        in: path
+        description: ID of trip to add passenger to
+        required: true
+        schema:
+          type: string
+    responses:
+      200:
+        description: Passenger added to trip
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      401:
+        description: Unauthorized
+      403:
+        description: Forbidden
+      404:
+        description: Not Found
+      500:
+        description: Internal Server Error
+
+/trips/{tripId}/passengers/{userId}:
+  delete:
+    summary: Remove a passenger from a trip
+    description: Remove a passenger from a trip
+    operationId: removePassengerFromTrip
+    tags:
+      - Passengers
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: tripId
+        in: path
+        description: ID of trip to remove passenger from
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: ID of user to remove
+        required: true
+        schema:
+          type: string
+    responses:
+      204:
+        description: Passenger removed from trip
+      401:
+        description: Unauthorized
+      403:
+        description: Forbidden
+      404:
+        description: Not Found
+      500:
+        description: Internal Server Error
