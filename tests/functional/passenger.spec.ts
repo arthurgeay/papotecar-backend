@@ -34,8 +34,6 @@ test.group('Register as a passenger on trip', (group) => {
     assert.equal(response.status(), 404)
   })
 
-  // TODO : Vérifier que l'utilisateur connecté n'est pas le créateur du voyage
-
   test('it should return that the user is not allowed to register on trip', async ({
     client,
     assert,
@@ -50,8 +48,6 @@ test.group('Register as a passenger on trip', (group) => {
       'E_AUTHORIZATION_FAILURE: You cannot register for your own trip'
     )
   })
-
-  // TODO : Vérifier que l'utilisateur connecté n'est pas déjà inscrit à ce voyage
 
   test('it should return that the user is already registered for the trip', async ({
     client,
@@ -72,7 +68,6 @@ test.group('Register as a passenger on trip', (group) => {
     )
   })
 
-  // TODO : Vérifier que l'utilisateur n'est pas passager ou conducteur sur un autre voyage au même moment
   test('it should return that user is already booked as driver on the same date', async ({
     client,
     assert,
@@ -132,6 +127,4 @@ test.group('Register as a passenger on trip', (group) => {
     assert.exists(response.body().driver)
     assert.exists(response.body().passengers)
   })
-
-  // TODO : Enregistrer la demande de passager pour le voyage
 })
