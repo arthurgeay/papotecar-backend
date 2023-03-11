@@ -700,3 +700,41 @@ test.group('Delete trip', (group) => {
     assert.equal(response.status(), 204)
   })
 })
+
+test.group('Find a trip', (group) => {
+  group.each.setup(async () => {
+    await Database.beginGlobalTransaction()
+    return () => Database.rollbackGlobalTransaction()
+  })
+
+  test('it should return that user is not authenticated', async ({ client, assert }) => {
+    const response = await client.get(`/trips/${uuid()}`)
+
+    assert.equal(response.status(), 401)
+  })
+
+  test('it should return that trip does not exist', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+    const response = await client.get(`/trips/${uuid()}`).loginAs(user!)
+
+    assert.equal(response.status(), 404)
+  })
+
+  test('it should return trip successfully', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+    const trip = await Trip.first()
+
+    const response = await client.get(`/trips/${trip!.id}`).loginAs(user!)
+
+    assert.equal(response.status(), 200)
+    assert.exists(response.body().id)
+    assert.exists(response.body().departure_location)
+    assert.exists(response.body().arrival_location)
+    assert.exists(response.body().departure_datetime)
+    assert.exists(response.body().max_passengers)
+    assert.exists(response.body().price)
+    assert.exists(response.body().content)
+    assert.exists(response.body().driver)
+    assert.exists(response.body().passengers)
+  })
+})

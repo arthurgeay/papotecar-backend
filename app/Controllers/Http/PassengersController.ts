@@ -28,7 +28,7 @@ export default class PassengersController {
     return response.send(trip)
   }
 
-  public async destroy({ request, params, response, auth, bouncer }: HttpContextContract) {
+  public async destroy({ request, params, response, bouncer }: HttpContextContract) {
     await request.validate(UuidParamValidator)
     const trip = await Trip.findOrFail(params.id)
 

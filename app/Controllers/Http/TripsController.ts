@@ -20,6 +20,16 @@ export default class TripsController {
       .paginate(page, DEFAULT_PAGE_LIMIT)
   }
 
+  public async show({ params }: HttpContextContract) {
+    return await Trip.query()
+      .preload('arrivalLocation')
+      .preload('departureLocation')
+      .preload('driver')
+      .preload('passengers')
+      .where('id', params.id)
+      .firstOrFail()
+  }
+
   public async store({ request, auth }: HttpContextContract) {
     const payload = await request.validate(TripValidator)
 
