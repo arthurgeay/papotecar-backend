@@ -17,15 +17,142 @@ test.group('Find all trips', (group) => {
     assert.equal(response.status(), 401)
   })
 
-  test('it should return all trips', async ({ client, assert }) => {
-    const user = await User.findBy('email', 'test@papotecar.com')
-    const response = await client.get('/trips').loginAs(user!)
+  test('it should validation failed')
+    .with([
+      {
+        data: {},
+        errors: [
+          {
+            rule: 'required',
+            field: 'departure_location',
+            message: 'Le lieu de départ est requis',
+          },
+          {
+            rule: 'required',
+            field: 'arrival_location',
+            message: "Le lieu d'arrivée est requis",
+          },
+          {
+            rule: 'required',
+            field: 'departure_datetime',
+            message: 'La date de départ est requise',
+          },
+          {
+            rule: 'required',
+            field: 'max_passengers',
+            message: 'Le nombre de passagers est requis',
+          },
+        ],
+      },
+      {
+        data: {
+          departure_location: 'fake test 1',
+          arrival_location: 'fake test 2',
+          departure_datetime: new Date('2020-01-01').toString(),
+          max_passengers: 10,
+        },
+        errors: [
+          {
+            rule: 'date.format',
+            field: 'departure_datetime',
+            message: 'La date de départ doit être une date valide (ISO format)',
+            args: {},
+          },
+          {
+            rule: 'range',
+            field: 'max_passengers',
+            message: 'Le nombre de passagers doit être compris entre 1 et 4',
+            args: {
+              start: 1,
+              stop: 4,
+            },
+          },
+        ],
+      },
+      {
+        data: {
+          page: 'fake page',
+          departure_location: 'fake test 1',
+          arrival_location: 'fake test 2',
+          departure_datetime: '2020-01-01T00:00:00.000Z',
+          max_passengers: 4,
+        },
+        errors: [
+          {
+            rule: 'number',
+            field: 'page',
+            message: 'La page doit être un nombre',
+          },
+          {
+            rule: 'afterOrEqual',
+            field: 'departure_datetime',
+            message: "La date de départ doit être supérieure ou égale à aujourd'hui",
+            args: {
+              afterOrEqual: DateTime.now().toISO(),
+            },
+          },
+        ],
+      },
+    ])
+    .run(async ({ client, assert }, row: any) => {
+      const user = await User.findBy('email', 'test@papotecar.com')
 
-    assert.equal(response.status(), 200)
-    assert.exists(response.body().data)
-    assert.exists(response.body().meta)
-    assert.equal(response.body().data.length, 10)
-  })
+      const response = await client
+        .get(`/trips?${new URLSearchParams(row.data).toString()}`)
+        .loginAs(user!)
+
+      assert.equal(response.status(), 422)
+
+      if (row.data.departure_datetime === '2020-01-01T00:00:00.000Z') {
+        assert.equal(response.body().errors[0].message, 'La page doit être un nombre')
+        assert.equal(
+          response.body().errors[1].message,
+          "La date de départ doit être supérieure ou égale à aujourd'hui"
+        )
+
+        return
+      }
+
+      assert.deepEqual(response.body().errors, row.errors)
+    })
+
+  test('it should return trips matching criteria')
+    .with([
+      {
+        data: {
+          page: 1,
+          departure_location: 'Nantes',
+          arrival_location: 'Paris',
+          departure_datetime: '2027-09-01T08:30:00.000Z',
+          max_passengers: 2,
+        },
+        expected: {
+          resultLength: 2,
+        },
+      },
+      {
+        data: {
+          page: 1,
+          departure_location: 'Nantes',
+          arrival_location: 'Paris',
+          departure_datetime: '2027-09-01T08:30:00.000Z',
+          max_passengers: 3,
+        },
+        expected: {
+          resultLength: 1,
+        },
+      },
+    ])
+    .run(async ({ client, assert }, row: any) => {
+      const user = await User.findBy('email', 'test@papotecar.com')
+
+      const response = await client
+        .get(`/trips?${new URLSearchParams(row.data).toString()}`)
+        .loginAs(user!)
+
+      assert.equal(response.status(), 200)
+      assert.equal(response.body().data.length, row.expected.resultLength)
+    })
 })
 
 test.group('Create trip', (group) => {
@@ -197,7 +324,7 @@ test.group('Create trip', (group) => {
   test('it should return that driver is booked', async ({ client, assert }) => {
     const user = await User.findBy('email', 'test@papotecar.com')
     const date = new Date()
-    date.setHours(0, 0, 0, 0)
+    date.setHours(10, 30, 0, 0)
 
     const response = await client
       .post('/trips')
@@ -509,15 +636,15 @@ test.group('Update trip', (group) => {
   }) => {
     const user = await User.findBy('email', 'test@papotecar.com')
     const date = new Date()
-    date.setHours(0, 0, 0, 0)
+    date.setHours(10, 30, 0, 0)
 
     const trip = await Trip.query()
       .where('driver_id', user!.id)
       .where('departure_datetime', date)
       .first()
 
-    const newDate = new Date('2026-01-01')
-    newDate.setHours(0, 0, 0, 0)
+    const newDate = new Date('2026-09-01')
+    newDate.setHours(10, 30, 0, 0)
 
     const response = await client
       .put(`/trips/${trip!.id}`)
@@ -551,15 +678,15 @@ test.group('Update trip', (group) => {
     const user = await User.findBy('email', 'test@papotecar.com')
 
     const date = new Date()
-    date.setHours(0, 0, 0, 0)
+    date.setHours(10, 30, 0, 0)
 
     const trip = await Trip.query()
       .where('driver_id', user!.id)
       .where('departure_datetime', date)
       .first()
 
-    const newDate = new Date('2027-01-01')
-    newDate.setHours(0, 0, 0, 0)
+    const newDate = new Date('2027-09-01')
+    newDate.setHours(10, 30, 0, 0)
 
     const response = await client
       .put(`/trips/${trip!.id}`)

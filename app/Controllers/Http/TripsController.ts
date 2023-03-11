@@ -4,36 +4,27 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Trip from 'App/Models/Trip'
 import TripValidator from 'App/Validators/TripValidator'
 import LocationService from 'App/Services/LocationService'
-import { DateTime } from 'luxon'
 import UuidParamValidator from 'App/Validators/UuidParamValidator'
-
-const DEFAULT_PAGE_LIMIT = 10
+import SearchValidator from 'App/Validators/SearchValidator'
 
 export default class TripsController {
-  public async index({ request, response }: HttpContextContract) {
-    const page = request.input('page', 1)
-    const departureDatetimeFilter = request.input('departure_datetime', DateTime.now())
-    const departureLocationFilter = request.input('departure_location')
-    const arrivalLocation = request.input('arrival_location')
-    const maxPassengersFilter = request.input('max_passengers', 1)
-
-    if (!departureLocationFilter || !arrivalLocation) {
-      return response.status(400).send({
-        message: 'departure_location and arrival_location are required',
-      })
-    }
+  public async index({ request }: HttpContextContract) {
+    const payload = await request.validate(SearchValidator)
+    const DEFAULT_PAGE_LIMIT = 10
 
     return await Trip.query()
       .preload('driver')
-      .preload('departureLocation', (departureLocationQuery) => {
-        departureLocationQuery.where('name', departureLocationFilter)
+      .preload('departureLocation')
+      .preload('arrivalLocation')
+      .whereHas('departureLocation', (query) => {
+        query.where('name', payload.departure_location)
       })
-      .preload('arrivalLocation', (arrivalLocationQuery) => {
-        arrivalLocationQuery.where('name', arrivalLocation)
+      .whereHas('arrivalLocation', (query) => {
+        query.where('name', payload.arrival_location)
       })
-      .andWhere('maxPassengers', '>=', maxPassengersFilter)
-      .andWhere('departureDatetime', '>=', DateTime.fromISO(departureDatetimeFilter).toSQL())
-      .paginate(page, DEFAULT_PAGE_LIMIT)
+      .where('maxPassengers', '>=', payload.max_passengers)
+      .where('departureDatetime', '>=', payload.departure_datetime.toSQL())
+      .paginate(payload.page || 1, DEFAULT_PAGE_LIMIT)
   }
 
   public async show({ params }: HttpContextContract) {
@@ -77,8 +68,8 @@ export default class TripsController {
     // TODO : Créer également une conversation et un message de base
   }
 
-  public async update({ request, params, bouncer, auth }: HttpContextContract) {
-    await request.validate(UuidParamValidator)
+  public async update({ request, bouncer, auth }: HttpContextContract) {
+    const { params } = await request.validate(UuidParamValidator)
 
     const trip = await Trip.findOrFail(params.id)
 
@@ -115,14 +106,12 @@ export default class TripsController {
     // TODO : Envoyer un email pour prévenir les passagers que le trajet a été modifié par le conducteur
   }
 
-  public async destroy({ request, params, bouncer, response }: HttpContextContract) {
-    await request.validate(UuidParamValidator)
+  public async destroy({ request, bouncer, response }: HttpContextContract) {
+    const payload = await request.validate(UuidParamValidator)
 
-    const trip = await Trip.findOrFail(params.id)
+    const trip = await Trip.findOrFail(payload.params.id)
     await bouncer.with('TripPolicy').authorize('delete', trip)
     await trip.delete()
-
-    // TODO : Supprimer les passagers
 
     return response.status(204)
 

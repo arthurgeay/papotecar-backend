@@ -28,7 +28,7 @@ export default class extends BaseSeeder {
       const departureLocation = await Location.findBy('name', 'Nantes')
       const arrivalLocation = await Location.findBy('name', 'Paris')
       const date = new Date()
-      date.setHours(0, 0, 0, 0)
+      date.setHours(10, 30, 0, 0)
 
       const firstTrip = await TripFactory.merge({
         departureLocationId: departureLocation!.id,
@@ -40,8 +40,8 @@ export default class extends BaseSeeder {
       const passenger = await UserFactory.create()
       await firstTrip.related('passengers').attach([passenger.id])
 
-      const otherDate = new Date('2026-01-01')
-      otherDate.setHours(0, 0, 0, 0)
+      const otherDate = new Date('2026-09-01')
+      otherDate.setHours(10, 30, 0, 0)
 
       await TripFactory.merge({
         departureLocationId: departureLocation!.id,
@@ -51,14 +51,15 @@ export default class extends BaseSeeder {
       }).create()
 
       const driver = await UserFactory.create()
-      const dateWithPassenger = new Date('2027-01-01')
-      dateWithPassenger.setHours(0, 0, 0, 0)
+      const dateWithPassenger = new Date('2027-09-01')
+      dateWithPassenger.setHours(10, 30, 0, 0)
 
       const tripWithPassenger = await TripFactory.merge({
         departureLocationId: departureLocation!.id,
         arrivalLocationId: arrivalLocation!.id,
         driverId: driver.id,
         departureDatetime: DateTime.fromJSDate(dateWithPassenger),
+        maxPassengers: 3,
       }).create()
 
       await tripWithPassenger.related('passengers').attach([user!.id])
@@ -76,6 +77,7 @@ export default class extends BaseSeeder {
         arrivalLocationId: arrivalLocation!.id,
         driverId: anotherDriver.id,
         departureDatetime: DateTime.fromJSDate(dateWithPassenger),
+        maxPassengers: 2,
       }).create()
     }
   }
