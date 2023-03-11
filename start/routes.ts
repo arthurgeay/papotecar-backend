@@ -35,4 +35,5 @@ Route.group(() => {
   Route.delete('/trips/:id/passengers/:passengerId', 'PassengersController.destroy')
 
   Route.put('/trips/:id/passengers/:passengerId/approve', 'PassengersController.approve')
+  Route.delete('/trips/:id/passengers/:passengerId/disapprove', 'PassengersController.disapprove')
 }).middleware('auth')

@@ -184,7 +184,7 @@ test.group('Unregister a passenger', (group) => {
         .loginAs(user!)
 
       assert.equal(response.status(), 403)
-      console.log(
+      assert.equal(
         response.body().message,
         'E_AUTHORIZATION_FAILURE: You cannot unregister for another passenger'
       )
@@ -280,15 +280,90 @@ test.group('Approve passenger', (group) => {
       .put(`/trips/${trip!.id}/passengers/${trip!.passengers[0].id}/approve`)
       .loginAs(user!)
 
-    assert.equal(response.status(), 200)
-    assert.exists(response.body().departure_location)
-    assert.exists(response.body().arrival_location)
-    assert.exists(response.body().departure_datetime)
-    assert.exists(response.body().max_passengers)
-    assert.exists(response.body().price)
-    assert.exists(response.body().content)
-    assert.exists(response.body().driver)
-    assert.exists(response.body().passengers)
-    assert.equal(response.body().passengers[0].is_approved, true)
+    const tripUpdated = await Trip.query()
+      .preload('passengers')
+      .where('driver_id', user!.id)
+      .first()
+
+    assert.equal(response.status(), 204)
+    assert.isTrue(tripUpdated!.passengers[0].$extras.pivot_is_approve)
+  })
+})
+
+test.group('Reject passenger', (group) => {
+  group.each.setup(async () => {
+    await Database.beginGlobalTransaction()
+    return () => Database.rollbackGlobalTransaction()
+  })
+
+  test('it should return that user is not authenticated', async ({ client, assert }) => {
+    const response = await client.put(`/trips/${uuid()}/passengers/${uuid()}/approve`)
+    assert.equal(response.status(), 401)
+  })
+
+  test('it should return that id is not an uuid', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+
+    const response = await client.put(`/trips/1/passengers/1/approve`).loginAs(user!)
+
+    assert.equal(response.status(), 422)
+    assert.equal(response.body().errors[0].message, "L'identifiant doit être un UUID valide")
+    assert.equal(response.body().errors[1].message, "L'identifiant doit être un UUID valide")
+  })
+
+  test('it should return that user is not a passenger for the trip ', async ({
+    client,
+    assert,
+  }) => {
+    const user = await User.first()
+    const driver = await User.findBy('email', 'test@papotecar.com')
+
+    const trip = await Trip.query()
+      .where('driver_id', driver!.id)
+      .whereHas('passengers', (query) => {
+        query.whereNot('user_id', user!.id)
+      })
+      .first()
+
+    const response = await client
+      .put(`/trips/${trip!.id}/passengers/${user!.id}/approve`)
+      .loginAs(driver!)
+
+    assert.equal(response.status(), 404)
+  })
+
+  test('it should return that user is not the driver for the trip ', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+
+    const trip = await Trip.query().whereNot('driver_id', user!.id).preload('passengers').first()
+
+    const response = await client
+      .put(`/trips/${trip!.id}/passengers/${trip!.passengers[0].id}/approve`)
+      .loginAs(user!)
+
+    assert.equal(response.status(), 403)
+    assert.equal(
+      response.body().message,
+      'E_AUTHORIZATION_FAILURE: You cannot update a passenger status'
+    )
+  })
+
+  test('it should return that user is disapproved successfully', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
+    const trip = await Trip.query().preload('passengers').where('driver_id', user!.id).first()
+
+    const response = await client
+      .delete(`/trips/${trip!.id}/passengers/${trip!.passengers[0].id}/disapprove`)
+      .loginAs(user!)
+
+    const tripUpdated = await Trip.query()
+      .whereHas('passengers', (query) => {
+        query.where('user_id', trip!.passengers[0].id)
+      })
+      .where('driver_id', user!.id)
+      .first()
+
+    assert.equal(response.status(), 204)
+    assert.isNull(tripUpdated)
   })
 })
