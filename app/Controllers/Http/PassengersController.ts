@@ -38,4 +38,22 @@ export default class PassengersController {
 
     return response.status(204)
   }
+
+  public async approve(ctx: HttpContextContract) {
+    await PassengerService.updatePassengerStatus(ctx, true)
+
+    // TODO : Pour plus tard :
+    // TODO : Envoyer un mail pour notifier l'utilisateur de l'approbation
+
+    return ctx.response.status(204)
+  }
+
+  public async disapprove(ctx: HttpContextContract) {
+    await PassengerService.updatePassengerStatus(ctx, false)
+
+    // TODO : Pour plus tard
+    // Envoyer un mail pour notifier l'utilisation du refus
+
+    return ctx.response.status(204)
+  }
 }

@@ -20,4 +20,12 @@ export default class PassengerPolicy extends BasePolicy {
 
     return Bouncer.deny('You cannot unregister for another passenger')
   }
+
+  public async update(user: User, trip: Trip) {
+    if (user.id === trip.driverId) {
+      return true
+    }
+
+    return Bouncer.deny('You cannot update a passenger status')
+  }
 }
