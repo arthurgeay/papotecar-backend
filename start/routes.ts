@@ -31,4 +31,9 @@ Route.group(() => {
   Route.post('/logout', 'AuthController.logout')
 
   Route.resource('trips', 'TripsController').apiOnly()
+  Route.post('/trips/:id/passengers', 'PassengersController.store')
+  Route.delete('/trips/:id/passengers/:passengerId', 'PassengersController.destroy')
+
+  Route.put('/trips/:id/passengers/:passengerId/approve', 'PassengersController.approve')
+  Route.delete('/trips/:id/passengers/:passengerId/disapprove', 'PassengersController.disapprove')
 }).middleware('auth')
