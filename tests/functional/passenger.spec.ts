@@ -74,7 +74,7 @@ test.group('Register as a passenger on trip', (group) => {
   }) => {
     const user = await User.findBy('email', 'test@papotecar.com')
     const date = new Date()
-    date.setHours(0, 0, 0, 0)
+    date.setHours(10, 30, 0, 0)
 
     const trip = await Trip.query()
       .where('departure_datetime', date)
@@ -89,8 +89,8 @@ test.group('Register as a passenger on trip', (group) => {
   test('it should return that user is a passenger in another trip', async ({ client, assert }) => {
     const user = await User.findBy('email', 'test@papotecar.com')
 
-    const dateWithPassenger = new Date('2027-01-01')
-    dateWithPassenger.setHours(0, 0, 0, 0)
+    const dateWithPassenger = new Date('2027-09-01')
+    dateWithPassenger.setHours(10, 30, 0, 0)
 
     const trip = await Trip.query()
       .leftJoin('passengers', 'passengers.trip_id', 'trips.id')

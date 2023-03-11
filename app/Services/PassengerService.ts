@@ -23,26 +23,30 @@ export class PassengerService {
   }
 
   public static async updatePassengerStatus(
-    { request, params, bouncer }: HttpContextContract,
+    { request, bouncer }: HttpContextContract,
     isApproved: boolean
   ) {
-    await request.validate(UuidParamValidator)
+    const payload = await request.validate(UuidParamValidator)
 
     const trip = await Trip.query()
-      .where('id', params.id)
+      .where('id', payload.params.id)
       .whereHas('passengers', (query) => {
-        query.where('user_id', params.passengerId)
+        query.where('user_id', payload.params.passengerId!)
       })
       .firstOrFail()
 
     await bouncer.with('PassengerPolicy').authorize('update', trip)
 
     if (isApproved) {
-      await trip.related('passengers').pivotQuery().where('user_id', params.passengerId).update({
-        is_approve: true,
-      })
+      await trip
+        .related('passengers')
+        .pivotQuery()
+        .where('user_id', payload.params.passengerId!)
+        .update({
+          is_approve: true,
+        })
     } else {
-      await trip.related('passengers').detach([params.passengerId])
+      await trip.related('passengers').detach([payload.params.passengerId!])
     }
   }
 }

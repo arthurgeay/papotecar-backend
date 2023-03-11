@@ -6,9 +6,9 @@ import UuidParamValidator from 'App/Validators/UuidParamValidator'
 import { DateTime } from 'luxon'
 
 export default class PassengersController {
-  public async store({ request, params, bouncer, auth, response }: HttpContextContract) {
-    await request.validate(UuidParamValidator)
-    const trip = await Trip.findOrFail(params.id)
+  public async store({ request, bouncer, auth, response }: HttpContextContract) {
+    const payload = await request.validate(UuidParamValidator)
+    const trip = await Trip.findOrFail(payload.params.id)
 
     await bouncer.with('PassengerPolicy').authorize('register', trip)
     await PassengerService.isAlreadyRegistered(trip, auth.user!)
@@ -28,13 +28,13 @@ export default class PassengersController {
     return response.send(trip)
   }
 
-  public async destroy({ request, params, response, bouncer }: HttpContextContract) {
-    await request.validate(UuidParamValidator)
-    const trip = await Trip.findOrFail(params.id)
+  public async destroy({ request, response, bouncer }: HttpContextContract) {
+    const payload = await request.validate(UuidParamValidator)
+    const trip = await Trip.findOrFail(payload.params.id)
 
-    await bouncer.with('PassengerPolicy').authorize('unregister', trip, params.passengerId)
+    await bouncer.with('PassengerPolicy').authorize('unregister', trip, payload.params.passengerId!)
 
-    await trip.related('passengers').detach([params.passengerId])
+    await trip.related('passengers').detach([payload.params.passengerId!])
 
     return response.status(204)
   }

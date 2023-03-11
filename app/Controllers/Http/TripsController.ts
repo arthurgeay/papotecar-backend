@@ -5,19 +5,26 @@ import Trip from 'App/Models/Trip'
 import TripValidator from 'App/Validators/TripValidator'
 import LocationService from 'App/Services/LocationService'
 import UuidParamValidator from 'App/Validators/UuidParamValidator'
-
-const DEFAULT_PAGE_LIMIT = 10
+import SearchValidator from 'App/Validators/SearchValidator'
 
 export default class TripsController {
   public async index({ request }: HttpContextContract) {
-    const page = request.input('page', 1)
+    const payload = await request.validate(SearchValidator)
+    const DEFAULT_PAGE_LIMIT = 10
 
     return await Trip.query()
       .preload('driver')
       .preload('departureLocation')
       .preload('arrivalLocation')
-      .preload('passengers')
-      .paginate(page, DEFAULT_PAGE_LIMIT)
+      .whereHas('departureLocation', (query) => {
+        query.where('name', payload.departure_location)
+      })
+      .whereHas('arrivalLocation', (query) => {
+        query.where('name', payload.arrival_location)
+      })
+      .where('maxPassengers', '>=', payload.max_passengers)
+      .where('departureDatetime', '>=', payload.departure_datetime.toSQL())
+      .paginate(payload.page || 1, DEFAULT_PAGE_LIMIT)
   }
 
   public async show({ params }: HttpContextContract) {
@@ -61,8 +68,8 @@ export default class TripsController {
     // TODO : Créer également une conversation et un message de base
   }
 
-  public async update({ request, params, bouncer, auth }: HttpContextContract) {
-    await request.validate(UuidParamValidator)
+  public async update({ request, bouncer, auth }: HttpContextContract) {
+    const { params } = await request.validate(UuidParamValidator)
 
     const trip = await Trip.findOrFail(params.id)
 
@@ -99,14 +106,12 @@ export default class TripsController {
     // TODO : Envoyer un email pour prévenir les passagers que le trajet a été modifié par le conducteur
   }
 
-  public async destroy({ request, params, bouncer, response }: HttpContextContract) {
-    await request.validate(UuidParamValidator)
+  public async destroy({ request, bouncer, response }: HttpContextContract) {
+    const payload = await request.validate(UuidParamValidator)
 
-    const trip = await Trip.findOrFail(params.id)
+    const trip = await Trip.findOrFail(payload.params.id)
     await bouncer.with('TripPolicy').authorize('delete', trip)
     await trip.delete()
-
-    // TODO : Supprimer les passagers
 
     return response.status(204)
 
