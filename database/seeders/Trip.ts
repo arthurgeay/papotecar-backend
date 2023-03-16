@@ -18,6 +18,9 @@ export default class extends BaseSeeder {
           { is_approve: true },
         ])
       })
+      .merge({
+        maxPassengers: 4,
+      })
       .createMany(10)
 
     const user = await User.findBy('email', 'test@papotecar.com')
@@ -59,7 +62,7 @@ export default class extends BaseSeeder {
         arrivalLocationId: arrivalLocation!.id,
         driverId: driver.id,
         departureDatetime: DateTime.fromJSDate(dateWithPassenger),
-        maxPassengers: 3,
+        maxPassengers: 4,
       }).create()
 
       await tripWithPassenger.related('passengers').attach([user!.id])
@@ -79,6 +82,23 @@ export default class extends BaseSeeder {
         departureDatetime: DateTime.fromJSDate(dateWithPassenger),
         maxPassengers: 2,
       }).create()
+
+      await TripFactory.with('driver')
+        .with('departureLocation')
+        .with('arrivalLocation')
+        .with('passengers', 4, (passenger) => {
+          passenger.pivotAttributes([
+            { is_approve: true },
+            { is_approve: true },
+            { is_approve: true },
+            { is_approve: true },
+          ])
+        })
+        .merge({
+          departureDatetime: DateTime.fromJSDate(new Date()),
+          maxPassengers: 4,
+        })
+        .create()
     }
   }
 }

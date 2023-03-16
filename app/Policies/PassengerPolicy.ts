@@ -4,11 +4,13 @@ import Trip from 'App/Models/Trip'
 
 export default class PassengerPolicy extends BasePolicy {
   public async register(user: User, trip: Trip) {
-    if (user.id !== trip.driverId) {
+    await trip.loadCount('passengers')
+
+    if (user.id !== trip.driverId && trip.$extras.passengers_count < trip.maxPassengers) {
       return true
     }
 
-    return Bouncer.deny('You cannot register for your own trip')
+    return Bouncer.deny('You cannot register for your own trip or the trip is full')
   }
 
   public async unregister(user: User, trip: Trip, passengerId: string) {
