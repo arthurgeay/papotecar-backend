@@ -45,7 +45,7 @@ test.group('Register as a passenger on trip', (group) => {
     assert.equal(response.status(), 403)
     assert.equal(
       response.body().message,
-      'E_AUTHORIZATION_FAILURE: You cannot register for your own trip'
+      'E_AUTHORIZATION_FAILURE: You cannot register for your own trip or the trip is full'
     )
   })
 
@@ -59,6 +59,7 @@ test.group('Register as a passenger on trip', (group) => {
         query.where('user_id', user!.id)
       })
       .first()
+
     const response = await client.post(`/trips/${trip!.id}/passengers`).loginAs(user!)
 
     assert.equal(response.status(), 400)
@@ -107,11 +108,22 @@ test.group('Register as a passenger on trip', (group) => {
     )
   })
 
-  test('it should registered the user as a passenger successfully', async ({ client, assert }) => {
+  test('it should return that trip is full', async ({ client, assert }) => {
     const user = await User.findBy('email', 'test@papotecar.com')
 
-    const dateWithPassenger = new Date('2027-01-01')
-    dateWithPassenger.setHours(0, 0, 0, 0)
+    const trip = await Trip.query().has('passengers', '=', 4).firstOrFail()
+
+    const response = await client.post(`/trips/${trip!.id}/passengers`).loginAs(user!)
+
+    assert.equal(response.status(), 403)
+    assert.equal(
+      response.body().message,
+      'E_AUTHORIZATION_FAILURE: You cannot register for your own trip or the trip is full'
+    )
+  })
+
+  test('it should registered the user as a passenger successfully', async ({ client, assert }) => {
+    const user = await User.findBy('email', 'test@papotecar.com')
 
     const trip = await Trip.firstOrFail()
 
