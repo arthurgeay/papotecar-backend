@@ -60,6 +60,12 @@
         description: Forbidden
       404:
         description: Not Found
+      422:
+        description: Validation error.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationError'
       500:
         description: Internal Server Error
 
@@ -91,6 +97,12 @@
         description: Forbidden
       404:
         description: Not Found
+      422:
+        description: Validation error.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationError'
       500:
         description: Internal Server Error
 
@@ -161,6 +173,12 @@
         description: Forbidden
       404:
         description: Not Found
+      422:
+        description: Validation error.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationError'
       500:
         description: Internal Server Error
 
