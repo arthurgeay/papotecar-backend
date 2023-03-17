@@ -257,3 +257,15 @@ components:
           type: boolean
           description: The passenger's approval status.
           example: true
+
+    UserDashboard:
+      type: object
+      properties:
+        tripsAsDriver:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trip'
+        tripsAsPassenger:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trip'

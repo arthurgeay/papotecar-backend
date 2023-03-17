@@ -1,0 +1,26 @@
+/me/trips:
+  get:
+    summary: List of trips as a driver or as a passenger
+    description: List of trips as a driver or as a passenger
+    operationId: userTripsDashboard
+    tags:
+      - User Dashboard
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: List of trips
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDashboard'
+      401:
+        description: Unauthorized
+      422:
+        description: Validation error.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationError'
+      500:
+        description: Internal Server Error
