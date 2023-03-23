@@ -2,6 +2,7 @@ import Trip from 'App/Models/Trip'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import LocationFactory from './LocationFactory'
 import UserFactory from './UserFactory'
+import MessageFactory from './MessageFactory'
 
 export default Factory.define(Trip, ({ faker }) => {
   return {
@@ -15,4 +16,5 @@ export default Factory.define(Trip, ({ faker }) => {
   .relation('departureLocation', () => LocationFactory)
   .relation('arrivalLocation', () => LocationFactory)
   .relation('passengers', () => UserFactory)
+  .relation('messages', () => MessageFactory)
   .build()

@@ -269,3 +269,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Trip'
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: uuid
+          description: The message's ID.
+          example: e6b7c8d9-e0f1-2a3b-4c5d-6e7f8g9h0i1j
+        trip_id:
+          type: uuid
+          description: The trip's ID.
+          example: e6b7c8d9-e0f1-2a3b-4c5d-6e7f8g9h0i1j
+        user_id:
+          type: uuid
+          description: The user's ID.
+          example: e6b7c8d9-e0f1-2a3b-4c5d-6e7f8g9h0i1j
+        content:
+          type: string
+          description: The message's content.
+          example: Hello, I'm interested in your trip.
+        created_at:
+          type: datetime
+          description: The message's creation date.
+          example: 2019-01-01
+        updated_at:
+          type: datetime
+          description: The message's last update date.
+          example: 2019-01-01
+        user:
+          type: object
+          $ref: '#/components/schemas/User'

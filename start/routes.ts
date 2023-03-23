@@ -38,4 +38,6 @@ Route.group(() => {
   Route.delete('/trips/:id/passengers/:passengerId/disapprove', 'PassengersController.disapprove')
 
   Route.get('/me/trips', 'UserTripsController.index')
+
+  Route.get('/trips/:id/messages', 'MessagesController.show')
 }).middleware('auth')

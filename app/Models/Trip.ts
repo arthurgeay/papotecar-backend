@@ -79,6 +79,6 @@ export default class Trip extends BaseModel {
   })
   public passengers: ManyToMany<typeof User>
 
-  // @hasMany(() => Message)
-  // public messages: HasMany<typeof Message>
+  @hasMany(() => Message)
+  public messages: HasMany<typeof Message>
 }
