@@ -2,6 +2,7 @@ import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import Location from 'App/Models/Location'
 import Trip from 'App/Models/Trip'
 import User from 'App/Models/User'
+import MessageFactory from 'Database/factories/MessageFactory'
 import TripFactory from 'Database/factories/TripFactory'
 import UserFactory from 'Database/factories/UserFactory'
 import { DateTime } from 'luxon'
@@ -38,6 +39,12 @@ export default class extends BaseSeeder {
         arrivalLocationId: arrivalLocation!.id,
         driverId: user!.id,
         departureDatetime: DateTime.fromJSDate(date),
+      }).create()
+
+      await MessageFactory.merge({
+        tripId: firstTrip.id,
+        userId: user!.id,
+        content: 'Hello, I am the driver of this trip',
       }).create()
 
       const passenger = await UserFactory.create()
