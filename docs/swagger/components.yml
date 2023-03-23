@@ -300,3 +300,11 @@ components:
         user:
           type: object
           $ref: '#/components/schemas/User'
+
+    MessageBody:
+      type: object
+      properties:
+        content:
+          type: string
+          description: The message's content.
+          example: Hello, I'm interested in your trip.

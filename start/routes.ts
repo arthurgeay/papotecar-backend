@@ -40,4 +40,5 @@ Route.group(() => {
   Route.get('/me/trips', 'UserTripsController.index')
 
   Route.get('/trips/:id/messages', 'MessagesController.show')
+  Route.post('/trips/:id/messages', 'MessagesController.store')
 }).middleware('auth')
