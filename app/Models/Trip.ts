@@ -5,11 +5,14 @@ import {
   belongsTo,
   column,
   computed,
+  hasMany,
+  HasMany,
   ManyToMany,
   manyToMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import Location from './Location'
 import User from './User'
+import Message from './Message'
 
 export default class Trip extends BaseModel {
   @column({ isPrimary: true })
@@ -75,4 +78,7 @@ export default class Trip extends BaseModel {
     pivotColumns: ['is_approve'],
   })
   public passengers: ManyToMany<typeof User>
+
+  @hasMany(() => Message)
+  public messages: HasMany<typeof Message>
 }

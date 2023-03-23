@@ -2,6 +2,7 @@ import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import Location from 'App/Models/Location'
 import Trip from 'App/Models/Trip'
 import User from 'App/Models/User'
+import MessageFactory from 'Database/factories/MessageFactory'
 import TripFactory from 'Database/factories/TripFactory'
 import UserFactory from 'Database/factories/UserFactory'
 import { DateTime } from 'luxon'
@@ -38,7 +39,11 @@ export default class extends BaseSeeder {
         arrivalLocationId: arrivalLocation!.id,
         driverId: user!.id,
         departureDatetime: DateTime.fromJSDate(date),
-      }).create()
+      })
+        .with('messages', 1, (message) => {
+          message.merge({ userId: user!.id })
+        })
+        .create()
 
       const passenger = await UserFactory.create()
       await firstTrip.related('passengers').attach([passenger.id])
@@ -51,7 +56,11 @@ export default class extends BaseSeeder {
         arrivalLocationId: arrivalLocation!.id,
         driverId: user!.id,
         departureDatetime: DateTime.fromJSDate(otherDate),
-      }).create()
+      })
+        .with('messages', 1, (message) => {
+          message.merge({ userId: user!.id })
+        })
+        .create()
 
       const driver = await UserFactory.create()
       const dateWithPassenger = new Date('2027-09-01')
@@ -63,7 +72,11 @@ export default class extends BaseSeeder {
         driverId: driver.id,
         departureDatetime: DateTime.fromJSDate(dateWithPassenger),
         maxPassengers: 4,
-      }).create()
+      })
+        .with('messages', 1, (message) => {
+          message.merge({ userId: driver!.id })
+        })
+        .create()
 
       await tripWithPassenger.related('passengers').attach([user!.id])
 
@@ -72,7 +85,11 @@ export default class extends BaseSeeder {
         arrivalLocationId: arrivalLocation!.id,
         driverId: driver.id,
         departureDatetime: DateTime.fromJSDate(date),
-      }).create()
+      })
+        .with('messages', 1, (message) => {
+          message.merge({ userId: driver!.id })
+        })
+        .create()
 
       const anotherDriver = await UserFactory.create()
       await TripFactory.merge({
@@ -81,7 +98,11 @@ export default class extends BaseSeeder {
         driverId: anotherDriver.id,
         departureDatetime: DateTime.fromJSDate(dateWithPassenger),
         maxPassengers: 2,
-      }).create()
+      })
+        .with('messages', 1, (message) => {
+          message.merge({ userId: anotherDriver!.id })
+        })
+        .create()
 
       await TripFactory.with('driver')
         .with('departureLocation')
