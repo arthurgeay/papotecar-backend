@@ -1,5 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
+import Message from 'App/Models/Message'
 import Trip from 'App/Models/Trip'
 import User from 'App/Models/User'
 import { DateTime } from 'luxon'
@@ -420,6 +421,11 @@ test.group('Create trip', (group) => {
         content: 'My description',
       })
 
+    const message = await Message.query()
+      .where('trip_id', response.body().id)
+      .where('user_id', user!.id)
+      .first()
+
     assert.equal(response.status(), 200)
     assert.exists(response.body().id)
     assert.exists(response.body().departure_location)
@@ -429,6 +435,11 @@ test.group('Create trip', (group) => {
     assert.exists(response.body().price)
     assert.exists(response.body().content)
     assert.exists(response.body().driver)
+
+    assert.equal(
+      message!.content,
+      "Bonjour, je suis le conducteur de ce trajet. Si vous avez des questions, n'hésitez pas à me contacter."
+    )
   })
 })
 
