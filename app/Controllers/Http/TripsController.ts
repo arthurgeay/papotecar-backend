@@ -6,6 +6,7 @@ import TripValidator from 'App/Validators/TripValidator'
 import LocationService from 'App/Services/LocationService'
 import UuidParamValidator from 'App/Validators/UuidParamValidator'
 import SearchValidator from 'App/Validators/SearchValidator'
+import Message from 'App/Models/Message'
 
 export default class TripsController {
   public async index({ request }: HttpContextContract) {
@@ -57,15 +58,18 @@ export default class TripsController {
       content: payload.content,
     })
 
+    await Message.create({
+      tripId: trip.id,
+      userId: auth.user?.id,
+      content: `Bonjour, je suis le conducteur de ce trajet. Si vous avez des questions, n'hésitez pas à me contacter.`,
+    })
+
     await trip.load('driver')
     await trip.load('departureLocation')
     await trip.load('arrivalLocation')
     await trip.load('passengers')
 
     return await trip
-
-    // TODO : A faire plus tard pour la création d'un trip
-    // TODO : Créer également une conversation et un message de base
   }
 
   public async update({ request, bouncer, auth }: HttpContextContract) {

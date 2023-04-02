@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import PusherMessenger from '@ioc:Messenger/Pusher'
 import Trip from 'App/Models/Trip'
 import MessageValidator from 'App/Validators/MessageValidator'
 import UuidParamValidator from 'App/Validators/UuidParamValidator'
@@ -29,12 +30,18 @@ export default class MessagesController {
 
     const payload = await request.validate(MessageValidator)
 
-    await trip.related('messages').create({
+    const message = await trip.related('messages').create({
       ...payload,
       userId: auth.user!.id,
     })
 
+    await message.load('user')
+
     // TODO : Utiliser l'API de pusher
+
+    await PusherMessenger.trigger(trip.id, 'newMessage', {
+      message,
+    })
 
     return response.status(201)
   }

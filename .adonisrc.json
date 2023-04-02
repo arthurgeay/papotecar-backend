@@ -20,7 +20,10 @@
     "./start/kernel",
     {
       "file": "./start/validator",
-      "environment": ["web", "test"]
+      "environment": [
+        "web",
+        "test"
+      ]
     },
     "./start/bouncer"
   ],
@@ -31,18 +34,27 @@
     "@adonisjs/lucid",
     "@adonisjs/redis",
     "adonis5-swagger",
-    "@adonisjs/bouncer"
+    "@adonisjs/bouncer",
+    "./providers/MessengerProvider"
   ],
-  "aceProviders": ["@adonisjs/repl"],
+  "aceProviders": [
+    "@adonisjs/repl"
+  ],
   "tests": {
     "suites": [
       {
         "name": "functional",
-        "files": ["tests/functional/**/*.spec(.ts|.js)"],
+        "files": [
+          "tests/functional/**/*.spec(.ts|.js)"
+        ],
         "timeout": 60000
       }
     ]
   },
-  "testProviders": ["@japa/preset-adonis/TestsProvider"],
-  "metaFiles": ["resources/lang/**/*.(json|yaml)"]
+  "testProviders": [
+    "@japa/preset-adonis/TestsProvider"
+  ],
+  "metaFiles": [
+    "resources/lang/**/*.(json|yaml)"
+  ]
 }
