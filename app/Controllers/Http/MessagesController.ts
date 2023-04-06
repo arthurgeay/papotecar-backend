@@ -20,7 +20,9 @@ export default class MessagesController {
 
   public async show({ request, bouncer }: HttpContextContract) {
     const trip = await this.getTrip(request, bouncer, 'view')
-    await trip.load('messages')
+    await trip.load('messages', (loader) => {
+      loader.preload('user')
+    })
 
     return trip.messages
   }
