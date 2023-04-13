@@ -37,6 +37,7 @@ Route.group(() => {
   Route.put('/trips/:id/passengers/:passengerId/approve', 'PassengersController.approve')
   Route.delete('/trips/:id/passengers/:passengerId/disapprove', 'PassengersController.disapprove')
 
+  Route.get('/me', 'UsersController.show')
   Route.get('/me/trips', 'UserTripsController.index')
 
   Route.get('/trips/:id/messages', 'MessagesController.show')

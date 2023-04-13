@@ -39,8 +39,6 @@ export default class MessagesController {
 
     await message.load('user')
 
-    // TODO : Utiliser l'API de pusher
-
     await PusherMessenger.trigger(trip.id, 'newMessage', {
       message,
     })
