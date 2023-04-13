@@ -17,6 +17,7 @@ export default class TripsController {
       .preload('driver')
       .preload('departureLocation')
       .preload('arrivalLocation')
+      .preload('passengers')
       .whereHas('departureLocation', (query) => {
         query.where('name', payload.departure_location)
       })
