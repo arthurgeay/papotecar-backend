@@ -37,9 +37,11 @@ export default class TripValidator {
 
   public messages: CustomMessages = {
     'departure_location.required': 'Le lieu de départ est requis',
+    'departure_location.name.required': 'Le lieu de départ est requis',
     'departure_location.coordinates.uniqueGpsCoordinates':
       'Le lieu de départ doit être différent du lieu d’arrivée',
     'arrival_location.required': 'Le lieu d’arrivée est requis',
+    'arrival_location.name.required': 'Le lieu d’arrivée est requis',
     'arrival_location.coordinates.uniqueGpsCoordinates':
       'Le lieu d’arrivée doit être différent du lieu de départ',
     'departure_datetime.required': 'La date de départ est requise',
