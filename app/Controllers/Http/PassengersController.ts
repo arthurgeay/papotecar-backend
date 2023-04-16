@@ -4,6 +4,8 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Trip from 'App/Models/Trip'
 import UuidParamValidator from 'App/Validators/UuidParamValidator'
 import { DateTime } from 'luxon'
+import MailerService from 'App/Services/MailerService'
+import User from 'App/Models/User'
 
 export default class PassengersController {
   public async store({ request, bouncer, auth, response }: HttpContextContract) {
@@ -40,19 +42,33 @@ export default class PassengersController {
   }
 
   public async approve(ctx: HttpContextContract) {
-    await PassengerService.updatePassengerStatus(ctx, true)
+    const trip = await PassengerService.updatePassengerStatus(ctx, true)
 
-    // TODO : Pour plus tard :
-    // TODO : Envoyer un mail pour notifier l'utilisateur de l'approbation
+    const passenger = await User.find(ctx.params.passengerId!)
+
+    await MailerService.sendMail(
+      trip,
+      passenger!,
+      'emails/passenger_validation',
+      'Votre inscription au trajet a été validée',
+      { isValidate: true }
+    )
 
     return ctx.response.status(204)
   }
 
   public async disapprove(ctx: HttpContextContract) {
-    await PassengerService.updatePassengerStatus(ctx, false)
+    const trip = await PassengerService.updatePassengerStatus(ctx, false)
 
-    // TODO : Pour plus tard
-    // Envoyer un mail pour notifier l'utilisation du refus
+    const passenger = await User.find(ctx.params.passengerId!)
+
+    await MailerService.sendMail(
+      trip,
+      passenger!,
+      'emails/passenger_validation',
+      'Votre inscription au trajet a été refusée',
+      { isValidate: false }
+    )
 
     return ctx.response.status(204)
   }

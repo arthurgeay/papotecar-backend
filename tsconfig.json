@@ -20,7 +20,9 @@
       "@adonisjs/lucid",
       "@adonisjs/redis",
       "adonis5-swagger",
-      "@adonisjs/bouncer"
+      "@adonisjs/bouncer",
+      "@adonisjs/mail",
+      "@adonisjs/view"
     ]
   }
 }

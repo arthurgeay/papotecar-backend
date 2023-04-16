@@ -1,3 +1,4 @@
+import Mail from '@ioc:Adonis/Addons/Mail'
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
 import Trip from 'App/Models/Trip'
@@ -285,6 +286,7 @@ test.group('Approve passenger', (group) => {
   })
 
   test('it should return that user is approved successfully', async ({ client, assert }) => {
+    const mailer = Mail.fake()
     const user = await User.findBy('email', 'test@papotecar.com')
     const trip = await Trip.query().preload('passengers').where('driver_id', user!.id).first()
 
@@ -299,6 +301,14 @@ test.group('Approve passenger', (group) => {
 
     assert.equal(response.status(), 204)
     assert.isTrue(tripUpdated!.passengers[0].$extras.pivot_is_approve)
+
+    assert.isTrue(
+      mailer.exists((mail) => {
+        return mail.subject === 'Papotecar - Votre inscription au trajet a été validée'
+      })
+    )
+
+    Mail.restore()
   })
 })
 
@@ -361,6 +371,7 @@ test.group('Reject passenger', (group) => {
   })
 
   test('it should return that user is disapproved successfully', async ({ client, assert }) => {
+    const mailer = Mail.fake()
     const user = await User.findBy('email', 'test@papotecar.com')
     const trip = await Trip.query().preload('passengers').where('driver_id', user!.id).first()
 
@@ -377,5 +388,13 @@ test.group('Reject passenger', (group) => {
 
     assert.equal(response.status(), 204)
     assert.isNull(tripUpdated)
+
+    assert.isTrue(
+      mailer.exists((mail) => {
+        return mail.subject === 'Papotecar - Votre inscription au trajet a été refusée'
+      })
+    )
+
+    Mail.restore()
   })
 })

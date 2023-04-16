@@ -1,3 +1,4 @@
+import Mail from '@ioc:Adonis/Addons/Mail'
 import Database from '@ioc:Adonis/Lucid/Database'
 import { test } from '@japa/runner'
 import Message from 'App/Models/Message'
@@ -731,6 +732,8 @@ test.group('Update trip', (group) => {
   })
 
   test('it should return that trip is updated', async ({ client, assert }) => {
+    const mailer = Mail.fake()
+
     const user = await User.findBy('email', 'test@papotecar.com')
 
     const trip = await Trip.query().where('driver_id', user!.id).first()
@@ -780,6 +783,14 @@ test.group('Update trip', (group) => {
       longitude: -20,
       latitude: 32,
     })
+
+    assert.isTrue(
+      mailer.exists((mail) => {
+        return mail.subject === 'Papotecar - Modification de votre trajet'
+      })
+    )
+
+    Mail.restore()
   })
 })
 
@@ -830,12 +841,21 @@ test.group('Delete trip', (group) => {
   })
 
   test('it should return that trip is deleted', async ({ client, assert }) => {
+    const mailer = Mail.fake()
     const user = await User.findBy('email', 'test@papotecar.com')
     const trip = await Trip.query().where('driver_id', user!.id).first()
 
     const response = await client.delete(`/trips/${trip!.id}`).loginAs(user!)
 
     assert.equal(response.status(), 204)
+
+    assert.isTrue(
+      mailer.exists((mail) => {
+        return mail.subject === 'Papotecar - Suppression de votre trajet'
+      })
+    )
+
+    Mail.restore()
   })
 })
 

@@ -6,7 +6,8 @@
     "@adonisjs/repl/build/commands",
     "@adonisjs/lucid/build/commands",
     "adonis5-swagger/build/commands",
-    "@adonisjs/bouncer/build/commands"
+    "@adonisjs/bouncer/build/commands",
+    "@adonisjs/mail/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
   "aliases": {
@@ -20,10 +21,7 @@
     "./start/kernel",
     {
       "file": "./start/validator",
-      "environment": [
-        "web",
-        "test"
-      ]
+      "environment": ["web", "test"]
     },
     "./start/bouncer"
   ],
@@ -35,26 +33,26 @@
     "@adonisjs/redis",
     "adonis5-swagger",
     "@adonisjs/bouncer",
-    "./providers/MessengerProvider"
+    "./providers/MessengerProvider",
+    "@adonisjs/mail",
+    "@adonisjs/view"
   ],
-  "aceProviders": [
-    "@adonisjs/repl"
-  ],
+  "aceProviders": ["@adonisjs/repl"],
   "tests": {
     "suites": [
       {
         "name": "functional",
-        "files": [
-          "tests/functional/**/*.spec(.ts|.js)"
-        ],
+        "files": ["tests/functional/**/*.spec(.ts|.js)"],
         "timeout": 60000
       }
     ]
   },
-  "testProviders": [
-    "@japa/preset-adonis/TestsProvider"
-  ],
+  "testProviders": ["@japa/preset-adonis/TestsProvider"],
   "metaFiles": [
-    "resources/lang/**/*.(json|yaml)"
+    "resources/lang/**/*.(json|yaml)",
+    {
+      "pattern": "resources/views/**/*.edge",
+      "reloadServer": false
+    }
   ]
 }

@@ -35,6 +35,9 @@ export class PassengerService {
       })
       .firstOrFail()
 
+    await trip.load('departureLocation')
+    await trip.load('arrivalLocation')
+
     await bouncer.with('PassengerPolicy').authorize('update', trip)
 
     if (isApproved) {
@@ -48,5 +51,7 @@ export class PassengerService {
     } else {
       await trip.related('passengers').detach([payload.params.passengerId!])
     }
+
+    return trip
   }
 }
