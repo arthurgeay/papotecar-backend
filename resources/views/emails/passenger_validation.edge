@@ -1,0 +1,4 @@
+<h1>Bonjour {{ user.fullname }}</h1>
+
+<p>Votre inscription pour le trajet partant de {{ trip.departureLocation.name }} vers {{ trip.arrivalLocation.name }} le {{ new Date(trip.departureDatetime).toLocaleDateString() }} a été {{ isValidate ? 'validée' : 'refusée'}} par le conducteur.</p>
+<p>A bientôt,<br /> L'équipe Papotecar</p>

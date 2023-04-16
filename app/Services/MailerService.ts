@@ -29,6 +29,22 @@ class MailerService {
       }
     }
   }
+
+  public static async sendMail(
+    trip: Trip,
+    user: User,
+    template: string,
+    subject: string,
+    extraData: any
+  ) {
+    await Mail.sendLater((message) => {
+      message
+        .from('papotecar@gmail.com')
+        .to(user.email)
+        .subject(`Papotecar - ${subject}`)
+        .htmlView(template, { user, trip, ...extraData })
+    })
+  }
 }
 
 export default MailerService
