@@ -34,4 +34,8 @@ export default Env.rules({
   PUSHER_APP_ID: Env.schema.string(),
   PUSHER_APP_KEY: Env.schema.string(),
   PUSHER_APP_SECRET: Env.schema.string(),
+  SMTP_HOST: Env.schema.string({ format: 'host' }),
+  SMTP_PORT: Env.schema.number(),
+  SMTP_USERNAME: Env.schema.string(),
+  SMTP_PASSWORD: Env.schema.string(),
 })

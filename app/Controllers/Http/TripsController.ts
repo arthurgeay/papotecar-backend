@@ -7,6 +7,7 @@ import LocationService from 'App/Services/LocationService'
 import UuidParamValidator from 'App/Validators/UuidParamValidator'
 import SearchValidator from 'App/Validators/SearchValidator'
 import Message from 'App/Models/Message'
+import MailerService from 'App/Services/MailerService'
 
 export default class TripsController {
   public async index({ request }: HttpContextContract) {
@@ -104,6 +105,8 @@ export default class TripsController {
     await trip.load('departureLocation')
     await trip.load('arrivalLocation')
     await trip.load('passengers')
+
+    await MailerService.sendMailForPassengers(trip)
 
     return trip
 
