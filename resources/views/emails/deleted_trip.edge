@@ -1,0 +1,16 @@
+<h1>Bonjour {{ user.fullname }}</h1>
+
+<p>Le trajet pour lequel vous êtes inscrit à été supprimé par le conducteur.</p>
+
+<h2>Pour rappel voici, les informations du trajet :</h2>
+
+<ul>
+    <li>Lieu de départ: {{ trip.departureLocation.name}}</li>
+    <li>Lieu d'arrivée: {{ trip.arrivalLocation.name }}</li>
+    <li>Date de départ: {{ new Date(trip.departureDatetime).toLocaleDateString() }}</li>
+    <li>Prix: {{ trip.price }} €</li>
+    <li>Description: {{ trip.content || '' }}</li>
+    <li>Nombre de passagers maximum: {{ trip.maxPassengers }}</li>
+</ul>
+
+<p>A bientôt,<br /> L'équipe Papotecar</p>

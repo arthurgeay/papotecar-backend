@@ -106,12 +106,13 @@ export default class TripsController {
     await trip.load('arrivalLocation')
     await trip.load('passengers')
 
-    await MailerService.sendMailForPassengers(trip)
+    await MailerService.sendMailForPassengers(
+      trip,
+      'emails/updated_trip',
+      'Modification de votre trajet'
+    )
 
     return trip
-
-    // TODO : A faire plus tard pour la mise à jour d'un trip
-    // TODO : Envoyer un email pour prévenir les passagers que le trajet a été modifié par le conducteur
   }
 
   public async destroy({ request, bouncer, response }: HttpContextContract) {
@@ -119,11 +120,21 @@ export default class TripsController {
 
     const trip = await Trip.findOrFail(payload.params.id)
     await bouncer.with('TripPolicy').authorize('delete', trip)
+
+    await trip.load('departureLocation')
+    await trip.load('arrivalLocation')
+
+    const passengers = await trip.related('passengers').query()
+
     await trip.delete()
 
-    return response.status(204)
+    await MailerService.sendMailForPassengers(
+      trip,
+      'emails/deleted_trip',
+      'Suppression de votre trajet',
+      passengers
+    )
 
-    // TODO : A faire plus tard pour la mise à jour d'un trip
-    // Envoyer un email pour prévenir les passagers que le trajet a été supprimé par le conducteur
+    return response.status(204)
   }
 }

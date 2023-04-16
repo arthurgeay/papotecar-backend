@@ -1,18 +1,30 @@
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Trip from 'App/Models/Trip'
+import User from 'App/Models/User'
 
 class MailerService {
-  public static async sendMailForPassengers(trip: Trip) {
-    const passengers = await trip.related('passengers').query()
+  public static async sendMailForPassengers(
+    trip: Trip,
+    template: string,
+    subject: string,
+    passengers?: User[]
+  ) {
+    let users
 
-    if (passengers.length > 0) {
-      for (const passenger of passengers) {
+    if (!passengers) {
+      users = await trip.related('passengers').query()
+    } else {
+      users = passengers
+    }
+
+    if (users.length > 0) {
+      for (const user of users) {
         await Mail.sendLater((message) => {
           message
             .from('papotecar@gmail.com')
-            .to(passenger.email)
-            .subject('Papotecar - Votre trajet a été modifié')
-            .htmlView('emails/updated_trip', { user: passenger, trip })
+            .to(user.email)
+            .subject(`Papotecar - ${subject}`)
+            .htmlView(template, { user, trip })
         })
       }
     }

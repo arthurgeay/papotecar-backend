@@ -786,9 +786,11 @@ test.group('Update trip', (group) => {
 
     assert.isTrue(
       mailer.exists((mail) => {
-        return mail.subject === 'Papotecar - Votre trajet a été modifié'
+        return mail.subject === 'Papotecar - Modification de votre trajet'
       })
     )
+
+    Mail.restore()
   })
 })
 
@@ -839,12 +841,21 @@ test.group('Delete trip', (group) => {
   })
 
   test('it should return that trip is deleted', async ({ client, assert }) => {
+    const mailer = Mail.fake()
     const user = await User.findBy('email', 'test@papotecar.com')
     const trip = await Trip.query().where('driver_id', user!.id).first()
 
     const response = await client.delete(`/trips/${trip!.id}`).loginAs(user!)
 
     assert.equal(response.status(), 204)
+
+    assert.isTrue(
+      mailer.exists((mail) => {
+        return mail.subject === 'Papotecar - Suppression de votre trajet'
+      })
+    )
+
+    Mail.restore()
   })
 })
 
